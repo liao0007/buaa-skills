@@ -1,0 +1,51 @@
+%% buaa/core/math.tex
+\newcommand\eu{\mathrm{e}}
+\newcommand\iu{\mathrm{i}}
+\newcommand*{\diff}{\mathop{}\!\mathrm{d}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\newtheoremstyle{buaa}%
+{0pt}{0pt}{}{2\ccwd}{\bfseries}{.}{\ccwd}{}
+\theoremstyle{buaa}
+
+\newcommand{\theoremname}{定理}
+\newcommand{\assertionname}{断言}
+\newcommand{\axiomname}{公理}
+\newcommand{\corollaryname}{推论}
+\newcommand{\lemmaname}{引理}
+\newcommand{\propositionname}{命题}
+\newcommand{\definitionname}{定义}
+\newcommand{\examplename}{例}
+\newcommand{\remarkname}{注}
+\renewcommand{\proofname}{证明}
+\renewcommand{\lstlistingname}{代码}
+\renewcommand{\algorithmcfname}{算法}
+
+\newtheorem{theorem}                {\theoremname}     [chapter]
+\newtheorem{assertion}  [theorem]   {\assertionname}
+\newtheorem{axiom}      [theorem]   {\axiomname}
+\newtheorem{corollary}  [theorem]   {\corollaryname}
+\newtheorem{lemma}      [theorem]   {\lemmaname}
+\newtheorem{proposition}[theorem]   {\propositionname}
+\newtheorem{definition}             {\definitionname}  [chapter]
+\newtheorem{example}                {\examplename}     [chapter]
+\newtheorem*{remark}                {\remarkname}
+
+\renewenvironment{proof}[1][\proofname]{\par
+  \pushQED{\qed}%
+  \normalfont \topsep6\p@\@plus6\p@\relax
+  \trivlist
+  \item[\hskip\labelsep\bfseries #1\@addpunct{.}]\ignorespaces
+}{%
+  \popQED\endtrivlist\@endpefalse
+}
+
+\lstset{%
+  basicstyle=\small\ttfamily,
+  xleftmargin=2pc,
+  xrightmargin=2pc,
+  frame=single,
+  columns=flexible,
+  numbers=left,
+}

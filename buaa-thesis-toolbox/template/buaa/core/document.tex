@@ -1,0 +1,11 @@
+%% buaa/core/document.tex — document lifecycle
+\AtBeginDocument{%
+  \checkinput
+  \sethyper
+}
+\AfterEndPreamble{%
+  \buaa@frontMatterPageStyle
+  \buaa@buildFrontMatter
+  \buaa@mainMatterPageStyle
+  \buaa@setupMainMatterHeaders
+}

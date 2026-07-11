@@ -1,0 +1,35 @@
+%% buaa/reports/generic/setup.tex — minimal non-BUAA report profile
+\input{buaa/reports/generic/frontmatter/titlepage}
+\input{buaa/reports/generic/backmatter/stubs}
+
+\newcommand{\abstructkeyword}{%
+{\ifthenelse{\isundefined{\@abstrctcn}}{}{%
+  \pdfbookmark[0]{Abstract}{abstructkeyword}
+  \begin{spacing}{1.7}
+    {\zihao{3} \heiti \centerline{摘~~~~要}}
+    {\zihao{-4} \songti ~\par \@abstrctcn \par}
+    \ifthenelse{\isundefined{\@abstrcten}}{}{%
+      \clearpage
+      {\zihao{3} \buaa@latin\bfseries\centerline{Abstract}}
+      {\zihao{-4} \buaa@latin~\par \@abstrcten \par}
+    }
+  \end{spacing}
+  \ifthenelse{\equal{\@beginright}{off}}{\clearpage}{\clearautopage}
+}}
+
+\renewcommand{\checkinput}{%
+  \ifthenelse{\isundefined{\@titlecn}}{\errmessage{Please set title by 'Title'.}}{}
+  \ifthenelse{\isundefined{\@authorcn}}{\errmessage{Please set author by 'Author'.}}{}
+  \buaa@validateChoice{\@refcolor}{refcolor}
+  \buaa@validateChoice{\@beginright}{beginright}
+}
+
+\renewcommand{\buaa@buildFrontMatter}{%
+  \makegenerictitle
+  \abstructkeyword
+  \makecontextlist
+}
+
+\renewcommand{\buaa@setupMainMatterHeaders}{%
+  \fancyhead[CO]{\zihao{-5} \leftmark}%
+}

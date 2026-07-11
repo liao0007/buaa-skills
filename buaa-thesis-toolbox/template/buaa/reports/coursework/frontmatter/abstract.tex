@@ -1,0 +1,15 @@
+%% buaa/reports/coursework/frontmatter/abstract.tex
+\newcommand{\abstructkeyword}{%
+{\pdfbookmark[0]{摘要}{abstructkeyword}
+  \begin{spacing}{1.7}
+    {\zihao{3} \heiti \centerline{摘~~~~要}}
+    {\zihao{-4} \songti ~\par
+      \@abstrctcn \par ~\par
+      {\heiti 关键字：} \@keywordcn
+    }
+  \end{spacing}
+  \ifthenelse{\equal{\@beginright}{off}}{\clearpage}{\clearautopage}
+}}
+
+%% Coursework reports typically omit the English abstract page.
+\newcommand{\denotation}{}

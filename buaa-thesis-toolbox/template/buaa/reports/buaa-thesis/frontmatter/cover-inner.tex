@@ -1,0 +1,44 @@
+%% buaa/reports/buaa-thesis/frontmatter/cover-inner.tex
+\newcommand{\makecoverinner}{%
+{\pdfbookmark[0]{题目页}{makecoverinner}
+  {\zihao{5} \heiti \noindent
+    \makebox[5\ccwd][s]{中图分类号}：{\bfseries \@clc}
+    \\
+    \makebox[5\ccwd][s]{论文编号}：{\bfseries 10006\@studentid}
+  }
+  \centering
+  \vspace{150pt}
+  \begin{spacing}{1.2}
+    {\zihao{-2} \heiti
+        \buaa@ifsMastersThesis{\makebox[11\ccwd][s]{硕士学位论文}}{%
+        \buaa@ifsDoctorThesis{\makebox[11\ccwd][s]{博士学位论文}}{}}
+    }
+    \vspace{50pt}
+    {\begin{spacing}{1.2}
+    \zihao{-1} \heiti
+    \ifthenelse{\isundefined{\@subtitlecn}}{\vspace{20pt}}{}
+    \@titlecn
+    \ifthenelse{\isundefined{\@subtitlecn}}{\vspace{20pt}}{%
+      \\ \vspace{10pt}
+      \zihao{2} \@subtitlecn}
+    \end{spacing}
+    }
+  \end{spacing}
+  \vspace{120pt}
+  \begin{spacing}{2.3}
+    \zihao{-4} \songti
+    \begin{tabular}{lrrrlrrr}
+      作者姓名     &          \multicolumn{3}{l}{\@authorcn}                   & 申请学位级别        &   \multicolumn{3}{l}{ \hspace{-6pt}
+        \@branch \hspace{-0.5\ccwd}
+        \buaa@ifsMastersThesis{硕士}{%
+        \buaa@ifsDoctorThesis{博士}{}}
+      }       \\
+      指导教师姓名 &          \multicolumn{3}{l}{\@tutorcn}                    & 职\hspace{2\ccwd}称 &                        \multicolumn{3}{l}{\@tutordegree}                      \\
+      学科专业     &          \multicolumn{3}{l}{\@major}                      & 研究方向            &                        \multicolumn{3}{l}{\@feild}                            \\
+      学习时间自   & \@dateenrolly\ 年 & \@dateenrollm\ 月 & \@dateenrolld\ 日 & \hspace{2\ccwd}起至 & \@dategraduatey\ 年 & \@dategraduatem\ 月 & \@dategraduated\ 日止             \\
+      论文提交日期 & \@datesubmity\ 年 & \@datesubmitm\ 月 & \@datesubmitd\ 日 & 论文答辩日期        & \@datedefencey \ 年 & \@datedefencem \ 月 & \@datedefenced \ 日\hspace{\ccwd} \\
+      学位授予单位 &          \multicolumn{3}{l}{北京航空航天大学}             & 学位授予日期        &                  年 &                  月 &                  日\hspace{\ccwd} \\
+    \end{tabular}
+  \end{spacing}
+    \clearautopage
+}}

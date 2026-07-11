@@ -1,0 +1,10 @@
+%% buaa/core/hooks.tex — report profile hooks (overridden per profile)
+\newcommand{\checkinput}{%
+  \ClassError{buaa}{No `\string\checkinput' for report `\buaa@report'}{%
+    The selected report profile must define metadata validation.}%
+}
+\newcommand{\buaa@buildFrontMatter}{%
+  \ClassError{buaa}{No front matter for report `\buaa@report'}{%
+    The selected report profile must define `\string\buaa@buildFrontMatter'.}%
+}
+\newcommand{\buaa@setupMainMatterHeaders}{}
