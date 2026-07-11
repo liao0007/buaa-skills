@@ -1,0 +1,24 @@
+%% buaa/reports/generic/frontmatter/titlepage.tex
+\newcommand{\makegenerictitle}{%
+{\pdfbookmark[0]{Title}{makegenerictitle}
+  \centering
+  \vspace{120pt}
+  {\zihao{-2} \heiti \@titlecn \par}
+  \vspace{20pt}
+  {\zihao{3} \buaa@latin \@titleen \par}
+  \vspace{60pt}
+  {\zihao{-3} \songti
+    \ifthenelse{\isundefined{\@authoren}}{\@authorcn}{%
+      \@authorcn \quad (\@authoren)}%
+  \par}
+  \vspace{20pt}
+  {\zihao{4} \songti
+    \ifthenelse{\isundefined{\@institution}}{}{%
+      \@institution \par}
+    \ifthenelse{\isundefined{\@reportdate}}{}{%
+      \@reportdate \par}
+  }
+  \clearautopage
+}}
+
+\newcommand{\denotation}{}

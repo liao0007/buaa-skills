@@ -1,0 +1,72 @@
+%% buaa/core/metadata.tex — user-facing metadata commands (shared across profiles)
+\def\@refcolor{}
+\newcommand{\refcolor}[1]{\gdef\@refcolor{#1}}
+\def\@emptypagewords{}
+\newcommand{\emptypagewords}[1]{\gdef\@emptypagewords{#1}}
+\def\@beginright{}
+\newcommand{\beginright}[1]{\gdef\@beginright{#1}}
+
+\newcommand{\Title}[2]{\gdef\@titlecn{#1} \gdef\@titleen{#2}}
+\newcommand{\Subtitle}[2]{\gdef\@subtitlecn{#1} \gdef\@subtitleen{#2}}
+\newcommand{\Department}[1]{\gdef\@department{#1}}
+\def\@branch{工学}
+\newcommand{\Branch}[1]{\gdef\@branch{#1}}
+\newcommand{\Major}[1]{\gdef\@major{#1}}
+\newcommand{\Feild}[1]{\gdef\@feild{#1}}
+\newcommand{\Tutor}[3]{\gdef\@tutorcn{#1} \gdef\@tutoren{#2} \gdef\@tutordegree{#3}}
+\newcommand{\Cotutor}[3]{%
+  \gdef\@cotutorcn{#1}%
+  \gdef\@cotutoren{#2}%
+  \gdef\@cotutordegree{#3}}
+\newcommand{\Author}[2]{\gdef\@authorcn{#1} \gdef\@authoren{#2}}
+\newcommand{\StudentID}[1]{\gdef\@studentid{#1}}
+
+\newcommand{\CLC}[1]{\gdef\@clc{#1}}
+\newcommand{\DateEnroll}[3]{%
+  \gdef\@dateenrollm{#1}\gdef\@dateenrolld{#2}\gdef\@dateenrolly{#3}}
+\newcommand{\DateGraduate}[3]{%
+  \gdef\@dategraduatem{#1}\gdef\@dategraduated{#2}\gdef\@dategraduatey{#3}}
+\newcommand{\DateSubmit}[3]{%
+  \gdef\@datesubmitm{#1}\gdef\@datesubmitd{#2}\gdef\@datesubmity{#3}}
+\newcommand{\DateDefence}[3]{%
+  \gdef\@datedefencem{#1}\gdef\@datedefenced{#2}\gdef\@datedefencey{#3}}
+
+\newcommand{\Abstract}[2]{\gdef\@abstrctcn{#1} \gdef\@abstrcten{#2}}
+\newcommand{\Keyword}[2]{\gdef\@keywordcn{#1} \gdef\@keyworden{#2}}
+\newcommand{\Listfigtab}[1]{\gdef\@listfigtab{#1}}
+\newcommand{\Abbreviations}[1]{\gdef\@abbreviations{#1}}
+
+%% Optional metadata for coursework / generic profiles
+\newcommand{\Course}[1]{\gdef\@course{#1}}
+\newcommand{\CourseInstructor}[1]{\gdef\@courseinstructor{#1}}
+\newcommand{\ReportDate}[1]{\gdef\@reportdate{#1}}
+\newcommand{\Institution}[1]{\gdef\@institution{#1}}
+
+\newcommand{\sethyper}{%
+  \hypersetup{%
+    pdftitle={\@titlecn},
+    pdfkeywords={\@keywordcn},
+    pdfauthor={\@authorcn}
+  }%
+  \ifthenelse{\equal{\@refcolor}{on}}{%
+    \hypersetup{allcolors=blue}%
+  }{%
+    \hypersetup{allcolors=black}%
+  }%
+}
+
+\newcommand{\Bib}[2]{%
+  \bibliographystyle{#1}%
+  \clearpage
+  \phantomsection
+  \addcontentsline{toc}{chapter}{参考文献}
+  \bibliography{#2}%
+}
+
+\newcommand{\buaa@validateChoice}[2]{%
+  \ifthenelse{\equal{#1}{\empty}}{}{%
+    \ifthenelse{\equal{#1}{on} \OR \equal{#1}{off}}{}{%
+      \errmessage{Please use 'on' or 'off' for #2.}%
+    }%
+  }%
+}

@@ -1,0 +1,24 @@
+%% buaa/reports/coursework/setup.tex — coursework / lab report profile
+\input{buaa/reports/coursework/frontmatter/cover}
+\input{buaa/reports/coursework/frontmatter/abstract}
+\input{buaa/reports/coursework/backmatter/acknowledgments}
+
+\renewcommand{\checkinput}{%
+  \ifthenelse{\isundefined{\@titlecn}}{\errmessage{Please set title by 'Title'.}}{}
+  \ifthenelse{\isundefined{\@authorcn}}{\errmessage{Please set author by 'Author'.}}{}
+  \ifthenelse{\isundefined{\@course}}{\errmessage{Please set course by 'Course'.}}{}
+  \ifthenelse{\isundefined{\@courseinstructor}}{\errmessage{Please set instructor by 'CourseInstructor'.}}{}
+  \ifthenelse{\isundefined{\@reportdate}}{\errmessage{Please set date by 'ReportDate'.}}{}
+  \buaa@validateChoice{\@refcolor}{refcolor}
+  \buaa@validateChoice{\@beginright}{beginright}
+}
+
+\renewcommand{\buaa@buildFrontMatter}{%
+  \makecovercourse
+  \abstructkeyword
+  \makecontextlist
+}
+
+\renewcommand{\buaa@setupMainMatterHeaders}{%
+  \fancyhead[CO]{\zihao{-5} \@course}%
+}

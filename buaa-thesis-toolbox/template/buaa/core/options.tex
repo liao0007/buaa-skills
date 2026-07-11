@@ -1,0 +1,82 @@
+%% buaa/core/options.tex — class options
+\newcommand{\buaa@defoption}[3]{\DeclareOption{#1}{\gdef\@#2{#3}}}
+
+\def\buaa@report{buaa-thesis}
+
+%% Report profile (selects front/back matter bundle)
+\DeclareOption{buaa-thesis}{\gdef\buaa@report{buaa-thesis}}
+\DeclareOption{coursework}{\gdef\buaa@report{coursework}}
+\DeclareOption{generic}{\gdef\buaa@report{generic}}
+
+%% Thesis degree type (buaa-thesis profile)
+\buaa@defoption{master}{thesis}{master}
+\buaa@defoption{professional}{thesis}{professional}
+\buaa@defoption{doctor}{thesis}{doctor}
+\buaa@defoption{prodoctor}{thesis}{prodoctor}
+\buaa@defoption{Master}{thesis}{master}
+\buaa@defoption{Professional}{thesis}{professional}
+\buaa@defoption{Doctor}{thesis}{doctor}
+\buaa@defoption{ProDoctor}{thesis}{prodoctor}
+\DeclareOption{thesis}{\ClassWarning{buaa}{%
+  You have not specified the THESIS option. Use master(default), professional, doctor, or prodoctor.}}
+
+%% Permission level
+\DeclareOption{public}{\gdef\@permission{public}}
+\DeclareOption{privacy}{\gdef\@permission{privacy}}
+\DeclareOption{secret}{\gdef\@permission{secret3}}
+\DeclareOption{secret3}{\gdef\@permission{secret3}}
+\DeclareOption{secret5}{\gdef\@permission{secret5}}
+\DeclareOption{secret10}{\gdef\@permission{secret10}}
+\DeclareOption{secret*}{\gdef\@permission{secret*}}
+\DeclareOption{classified}{\gdef\@permission{classified5}}
+\DeclareOption{classified3}{\gdef\@permission{classified3}}
+\DeclareOption{classified5}{\gdef\@permission{classified5}}
+\DeclareOption{classified10}{\gdef\@permission{classified10}}
+\DeclareOption{classified*}{\gdef\@permission{classified*}}
+\DeclareOption{topsecret}{\gdef\@permission{topsecret10}}
+\DeclareOption{topsecret3}{\gdef\@permission{topsecret3}}
+\DeclareOption{topsecret5}{\gdef\@permission{topsecret5}}
+\DeclareOption{topsecret10}{\gdef\@permission{topsecret10}}
+\DeclareOption{topsecret*}{\gdef\@permission{topsecret*}}
+\DeclareOption{Public}{\gdef\@permission{public}}
+\DeclareOption{Privacy}{\gdef\@permission{privacy}}
+\DeclareOption{Secret}{\gdef\@permission{secret3}}
+\DeclareOption{Secret3}{\gdef\@permission{secret3}}
+\DeclareOption{Secret5}{\gdef\@permission{secret5}}
+\DeclareOption{Secret10}{\gdef\@permission{secret10}}
+\DeclareOption{Secret*}{\gdef\@permission{secret*}}
+\DeclareOption{Classified}{\gdef\@permission{classified5}}
+\DeclareOption{Classified3}{\gdef\@permission{classified3}}
+\DeclareOption{Classified5}{\gdef\@permission{classified5}}
+\DeclareOption{Classified10}{\gdef\@permission{classified10}}
+\DeclareOption{Classified*}{\gdef\@permission{classified*}}
+\DeclareOption{TopSecret}{\gdef\@permission{topsecret10}}
+\DeclareOption{TopSecret3}{\gdef\@permission{topsecret3}}
+\DeclareOption{TopSecret5}{\gdef\@permission{topsecret5}}
+\DeclareOption{TopSecret10}{\gdef\@permission{topsecret10}}
+\DeclareOption{TopSecret*}{\gdef\@permission{topsecret*}}
+\DeclareOption{permission}{\ClassWarning{buaa}{%
+  You have not specified the PERMISSION option. Use public, privacy, secret, classified, or topsecret.}}
+
+%% Print layout
+\buaa@defoption{oneside}{printtype}{oneside}
+\buaa@defoption{twoside}{printtype}{twoside}
+\buaa@defoption{Oneside}{printtype}{oneside}
+\buaa@defoption{Twoside}{printtype}{twoside}
+\DeclareOption{printtype}{\ClassWarning{buaa}{%
+  You have not specified the PRINTTYPE option. Use oneside or twoside.}}
+
+%% OS hint (pdfTeX font packages)
+\buaa@defoption{win}{ostype}{win}
+\buaa@defoption{linux}{ostype}{linux}
+\buaa@defoption{max}{ostype}{mac}
+\buaa@defoption{Win}{ostype}{win}
+\buaa@defoption{Linux}{ostype}{linux}
+\buaa@defoption{Max}{ostype}{mac}
+\DeclareOption{ostype}{\ClassWarning{buaa}{%
+  You have not specified the OSTYPE option. Use win, linux, or mac.}}
+
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{ctexbook}}
+
+\ExecuteOptions{buaa-thesis,master,public,oneside,win,a4paper,sub4section}
+\ProcessOptions\relax

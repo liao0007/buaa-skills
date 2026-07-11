@@ -1,0 +1,17 @@
+%% buaa/core/input.tex — file loading helpers
+\newcommand{\buaa@input}[1]{%
+  \InputIfFileExists{buaa/#1.tex}{}{%
+    \ClassError{buaa}{Missing file `buaa/#1.tex'}{%
+      Ensure the `buaa/` directory ships alongside `buaa.cls`.}%
+  }%
+}
+\newcommand{\buaa@loadreport}{%
+  \edef\buaa@report@setup{buaa/reports/\buaa@report/setup.tex}%
+  \IfFileExists{\buaa@report@setup}{%
+    \input{\buaa@report@setup}%
+  }{%
+    \ClassError{buaa}{Unknown report profile `\buaa@report'}{%
+      Available profiles live under `buaa/reports/`.%
+      Use class option `buaa-thesis`, `coursework`, or `generic`.}%
+  }%
+}

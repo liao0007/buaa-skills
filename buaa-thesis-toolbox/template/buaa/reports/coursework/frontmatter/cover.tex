@@ -1,0 +1,23 @@
+%% buaa/reports/coursework/frontmatter/cover.tex
+\newcommand{\makecovercourse}{%
+{\pdfbookmark[0]{封面}{makecovercourse}
+  \centering
+  \vspace{80pt}
+  {\zihao{2} \heiti
+    \ifthenelse{\isundefined{\@institution}}{课程报告}{\@institution 课程报告}
+  \par}
+  \vspace{40pt}
+  {\zihao{-2} \heiti \@titlecn \par}
+  \vspace{60pt}
+  \begin{spacing}{1.8}
+    \zihao{-3} \songti
+    \begin{tabular}{rl}
+      课程名称 & \@course \\
+      授课教师 & \@courseinstructor \\
+      学生姓名 & \@authorcn \\
+      学号     & \@studentid \\
+      提交日期 & \@reportdate \\
+    \end{tabular}
+  \end{spacing}
+  \clearautopage
+}}
