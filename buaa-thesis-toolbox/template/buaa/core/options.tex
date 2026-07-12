@@ -1,24 +1,24 @@
 %% buaa/core/options.tex — class options
-\newcommand{\buaa@defoption}[3]{\DeclareOption{#1}{\gdef\@#2{#3}}}
+\newcommand{\buaa@defoption}[3]{%
+  \DeclareOption{#1}{\expandafter\gdef\csname @#2\endcsname{#3}}}
+\newcommand{\buaa@defthesisoption}[2]{\DeclareOption{#1}{\gdef\buaa@thesis{#2}}}
 
-\def\buaa@report{buaa-thesis}
+\def\buaa@report{thesis}
 
 %% Report profile (selects front/back matter bundle)
-\DeclareOption{buaa-thesis}{\gdef\buaa@report{buaa-thesis}}
+\DeclareOption{thesis}{\gdef\buaa@report{thesis}}
 \DeclareOption{coursework}{\gdef\buaa@report{coursework}}
 \DeclareOption{generic}{\gdef\buaa@report{generic}}
 
-%% Thesis degree type (buaa-thesis profile)
-\buaa@defoption{master}{thesis}{master}
-\buaa@defoption{professional}{thesis}{professional}
-\buaa@defoption{doctor}{thesis}{doctor}
-\buaa@defoption{prodoctor}{thesis}{prodoctor}
-\buaa@defoption{Master}{thesis}{master}
-\buaa@defoption{Professional}{thesis}{professional}
-\buaa@defoption{Doctor}{thesis}{doctor}
-\buaa@defoption{ProDoctor}{thesis}{prodoctor}
-\DeclareOption{thesis}{\ClassWarning{buaa}{%
-  You have not specified the THESIS option. Use master(default), professional, doctor, or prodoctor.}}
+%% Thesis degree type (thesis profile)
+\buaa@defthesisoption{master}{master}
+\buaa@defthesisoption{professional}{professional}
+\buaa@defthesisoption{doctor}{doctor}
+\buaa@defthesisoption{prodoctor}{prodoctor}
+\buaa@defthesisoption{Master}{master}
+\buaa@defthesisoption{Professional}{professional}
+\buaa@defthesisoption{Doctor}{doctor}
+\buaa@defthesisoption{ProDoctor}{prodoctor}
 
 %% Permission level
 \DeclareOption{public}{\gdef\@permission{public}}
@@ -58,25 +58,45 @@
 \DeclareOption{permission}{\ClassWarning{buaa}{%
   You have not specified the PERMISSION option. Use public, privacy, secret, classified, or topsecret.}}
 
-%% Print layout
-\buaa@defoption{oneside}{printtype}{oneside}
-\buaa@defoption{twoside}{printtype}{twoside}
-\buaa@defoption{Oneside}{printtype}{oneside}
-\buaa@defoption{Twoside}{printtype}{twoside}
+%% Output profile. Both official profiles use mirrored headers; print additionally
+%% inserts blank verso pages between major parts.
+\DeclareOption{library}{\gdef\@printtype{library}\PassOptionsToClass{twoside,openany}{ctexbook}}
+\DeclareOption{print}{\gdef\@printtype{print}\PassOptionsToClass{twoside,openany}{ctexbook}}
+\DeclareOption{Library}{\gdef\@printtype{library}\PassOptionsToClass{twoside,openany}{ctexbook}}
+\DeclareOption{Print}{\gdef\@printtype{print}\PassOptionsToClass{twoside,openany}{ctexbook}}
 \DeclareOption{printtype}{\ClassWarning{buaa}{%
-  You have not specified the PRINTTYPE option. Use oneside or twoside.}}
+  You have not specified the PRINTTYPE option. Use library(default) or print.}}
 
 %% OS hint (pdfTeX font packages)
 \buaa@defoption{win}{ostype}{win}
 \buaa@defoption{linux}{ostype}{linux}
-\buaa@defoption{max}{ostype}{mac}
+\buaa@defoption{mac}{ostype}{mac}
 \buaa@defoption{Win}{ostype}{win}
 \buaa@defoption{Linux}{ostype}{linux}
-\buaa@defoption{Max}{ostype}{mac}
+\buaa@defoption{Mac}{ostype}{mac}
 \DeclareOption{ostype}{\ClassWarning{buaa}{%
   You have not specified the OSTYPE option. Use win, linux, or mac.}}
 
-\DeclareOption*{\PassOptionsToClass{\CurrentOption}{ctexbook}}
+%% Long titles move the title-page information block upward.
+\buaa@defoption{short}{titlelength}{short}
+\buaa@defoption{long}{titlelength}{long}
+\buaa@defoption{Short}{titlelength}{short}
+\buaa@defoption{Long}{titlelength}{long}
 
-\ExecuteOptions{buaa-thesis,master,public,oneside,win,a4paper,sub4section}
+%% Subject family controls heading numbering.
+\buaa@defoption{STEM}{subjecttype}{STEM}
+\buaa@defoption{HSS}{subjecttype}{HSS}
+
+%% Match official: unknown options go to ctexbook with fontset=none (use bundled CJK).
+\DeclareOption*{\PassOptionsToClass{\CurrentOption,fontset=none}{ctexbook}}
+
+%% Defaults before option processing (handlers may not run for global layout keys)
+\gdef\@printtype{library}
+\gdef\buaa@thesis{master}
+\gdef\@permission{public}
+\gdef\@ostype{mac}
+\gdef\@titlelength{short}
+\gdef\@subjecttype{STEM}
+
+\ExecuteOptions{a4paper,sub4section}
 \ProcessOptions\relax

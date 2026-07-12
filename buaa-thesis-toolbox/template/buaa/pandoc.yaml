@@ -1,0 +1,15 @@
+from: markdown+raw_tex+tex_math_dollars+pipe_tables
+to: pdf
+pdf-engine: xelatex
+top-level-division: chapter
+# Keep Latin as Times New Roman; Pandoc's default lmodern makes all-caps look cramped.
+variables:
+  lmodern: false
+# citeproc must run before bilingual-etal.lua (et al. / 等 + page dash).
+# Do not also set citeproc: true — that would run citeproc twice.
+filters:
+  - buaa/scripts/full-width-tables.lua
+  - buaa/scripts/longtable-continued.lua
+  - buaa/scripts/tikz.lua
+  - citeproc
+  - buaa/scripts/bilingual-etal.lua

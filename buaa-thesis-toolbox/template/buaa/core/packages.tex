@@ -1,20 +1,50 @@
 %% buaa/core/packages.tex
 \RequirePackage{graphicx}
-\def\BUAAThesisVer{v3.2 modular}
-\def\BUAAThesis{%
- B%
- {\fontsize{0.8em}{\baselineskip}\selectfont
- \kern-.12em\lower.5ex\hbox{U}%
- \kern-.46em\raise.47ex\hbox{A}%
- \kern-.12em A%
-}
- \kern-.35emT%
- \kern-.22em\lower.5ex\hbox{H}%
- \kern-.08em E%
- \kern-.05em\lower.5ex\hbox{S}%
- \kern-.26em I%
- \kern-.26em\raise.5ex\hbox{\rotatebox[origin=c]{180}{S}}%
-}
+\def\BUAAThesisVer{v4.1.0 modular (2025-09)}
+
+%% English logo: negative kern + alternating raise/lower.
+%% Usage: \englogo{HELLO}  — keep short; output is an unbreakable \mbox.
+\ExplSyntaxOn
+\int_new:N \l__buaa_englogo_int
+\NewDocumentCommand \englogo { m }
+  {
+    \mbox
+      {
+        \group_begin:
+        \int_zero:N \l__buaa_englogo_int
+        \buaa_englogo:n {#1}
+        \group_end:
+      }
+  }
+\cs_new_protected:Npn \buaa_englogo:n #1
+  {
+    \tl_map_inline:nn {#1}
+      {
+        \token_if_eq_meaning:NNTF ##1 \c_space_token
+          {
+            \c_space_tl
+            \int_zero:N \l__buaa_englogo_int
+          }
+          {
+            \int_incr:N \l__buaa_englogo_int
+            \int_compare:nT { \l__buaa_englogo_int > 1 } { \kern -.12em }
+            \int_case:nnF { \int_mod:nn { \l__buaa_englogo_int } { 3 } }
+              {
+                { 1 } { \hbox {##1} }
+                { 2 }
+                  {
+                    {
+                      \fontsize {0.8em} {\baselineskip} \selectfont
+                      \raise .47ex \hbox {##1}
+                    }
+                  }
+                { 0 } { \lower .5ex \hbox {##1} }
+              }
+              { \hbox {##1} }
+          }
+      }
+  }
+\ExplSyntaxOff
 
 \RequirePackage{ifthen}
 \RequirePackage{etoolbox}
@@ -22,9 +52,9 @@
 \RequirePackage{remreset}
 \RequirePackage{geometry}
 \RequirePackage{fancyhdr}
-\RequirePackage{setspace}
+\RequirePackage[nodisplayskipstretch]{setspace}
 \RequirePackage{float}
-\RequirePackage{subfigure}
+\RequirePackage{subcaption}
 \RequirePackage{epstopdf}
 \RequirePackage{array}
 \RequirePackage{enumitem}
@@ -36,10 +66,11 @@
 \RequirePackage{algorithm2e}
 \RequirePackage{amsmath}
 \RequirePackage{amsthm}
-\RequirePackage{hyperref}
+\RequirePackage[hypertexnames=false]{hyperref}
 \RequirePackage{pifont}
+\RequirePackage[symbol*,perpage,marginal]{footmisc}
 \RequirePackage{color}
 \RequirePackage{soul}
-\RequirePackage[sort&compress]{natbib}
-\DeclareGraphicsExtensions{.eps,.ps,.png,.jpg,.bmp}
+\RequirePackage{notoccite}
+\DeclareGraphicsExtensions{.eps,.ps,.png,.jpg,.bmp,.pdf}
 \newcommand{\highlight}[1]{\colorbox{yellow}{#1}}

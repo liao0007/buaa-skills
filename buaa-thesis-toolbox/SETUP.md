@@ -29,15 +29,23 @@ Paths below are the verified macOS locations from the reference machine
 
 ### Fonts
 
-`fontset=fandol` (set in `chapters/00-meta.md`) avoids local CJK lookup while
-defining `\songti` / `\heiti`. If setting fonts explicitly, install one per slot:
+This template uses **`fontset=none`** and loads bundled fonts from `buaa/font/`
+via `buaa/font/setup.tex` (official BUAAThesis 4.1.0 file names):
 
-| Slot | Options |
-|------|---------|
-| CJK serif 正文 | SimSun / STSong / Songti SC / FandolSong / Noto Serif CJK SC |
-| CJK sans 黑体 | SimHei / STHeiti / Heiti SC / FandolHei / Noto Sans CJK SC |
-| Latin | Times New Roman / TeX Gyre Termes |
-| Math | XITS Math / STIX Two Math / TeX Gyre Termes Math |
+| Slot | Files under `buaa/font/` |
+|------|--------------------------|
+| CJK serif 宋体 | `simsun.ttc` |
+| CJK sans 黑体 | `simhei.ttf` |
+| CJK 楷体 | `simkai.ttf` |
+| CJK 仿宋 | `simfang.ttf` |
+| Cover 行楷 | `STXingkai.ttf` (`\xingkai`) |
+| Latin | `Times New Roman*.ttf` |
+| Math | `Cambria Math.ttf` (fallback: STIX Two Math) |
+
+Keep the whole `buaa/font/` directory with the project. Do not rely on
+system-installed SimSun alone — the build paths are relative to the thesis root.
+
+If you must replace a file, keep the same filename so `setup.tex` still resolves.
 
 ## Phase 2: Zotero & bibliography
 
@@ -51,76 +59,84 @@ defining `\songti` / `\heiti`. If setting fonts explicitly, install one per slot
 
 ## Phase 3: Obsidian vault & plugins
 
-- Ensure the thesis-root vault has `chapters/`, `literatures/`, `assets/`,
-  `scripts/` (the bundled template already provides these).
-- `Settings > Community Plugins` → turn off Safe Mode.
-- Install and enable: **Zotero Integration**, **Obsidian Pandoc**, **LuaTikZ**,
-  **Latex Suite**, **Txt as MD**.
+- Ensure the thesis-root has `chapters/`, `literatures/`, `buaa/` (from `template/`).
+- Restore plugin settings by pointing at the **thesis root** only — the script
+  detects vault location, vault-relative thesis path, and external tools:
+
+  ```bash
+  SKILL_DIR="$HOME/.cursor/skills/_buaa-skills/buaa-thesis-toolbox"
+  "$SKILL_DIR/template-obsidian/restore-obsidian-plugins.sh" "$THESIS_ROOT"
+  # optional: add --dry-run to preview detection
+  ```
+
+- `Settings > Community Plugins` → turn off Safe Mode → install/enable if missing:
+  - **Shell commands** (required) — alias `Build thesis PDF` → `./buaa/scripts/build.sh`
+  - **Zotero Integration**, **LuaTikZ**
+- Reload Obsidian so `data.json` settings apply.
+- PDF builds always go through `./buaa/scripts/build.sh` (system Pandoc + XeLaTeX),
+  via Shell commands or a terminal. No Obsidian Pandoc export plugin.
+
+Bundled placeholders live in `template-obsidian/` (see its `README.md`). Restore
+merges plugin IDs into `community-plugins.json` and writes **target-specific**
+`data.json` (does not keep another author’s folder names or absolute paths;
+does not remove unrelated plugins such as Linter / Copilot).
 
 ## Phase 4: Plugin configuration
 
+Settings are filled by restore from detection. Verify the printed summary:
+
+### Shell commands (build from Obsidian)
+
+- `working_directory` = detected thesis-rel (`""` if vault == thesis)
+- Command: `./buaa/scripts/build.sh` · alias: `Build thesis PDF`
+- PATH augmentation for this OS = directories of detected `pandoc` / TeX binaries
+  (+ common Homebrew / MacTeX locations when present)
+- `execution_notification_mode` = `permanent` (keep the run notification visible
+  until dismissed — useful while waiting on XeLaTeX)
+- Run via `Cmd/Ctrl+P` → **Build thesis PDF**, or assign a hotkey
+
 ### Zotero Integration
 
-- Confirm the Zotero database path is detected.
-- `Add Import Format` named `Literature Note`:
-  - Output path: `<thesis-root>/literatures/{{citekey}}.md`
-  - Annotation image path: `<thesis-root>/literatures/{{citekey}}/`
-  - Template file: `<thesis-root>/zotero_literature_template.md` (bundled Nunjucks
-    template at the thesis root, same level as `buaa.cls`).
-- Citation insertion: Pandoc format, bracketed `[@{{citekey}}]`.
-- Note suggestion: `[[{{citekey}}]]`.
+- Cite format: Pandoc `[@{{citekey}}]`
+- Literature paths: `{thesis-rel}/literatures/…` or `literatures/…` when vault == thesis
 
-### Obsidian Pandoc
+Confirm Better BibTeX still auto-exports `<thesis-root>/references.bib`.
 
-- Pandoc path: `/opt/homebrew/bin/pandoc`. PDFLaTeX path: `/Library/TeX/texbin/pdflatex`.
-- Export source format: `Markdown`.
-- Extra arguments — **only** this:
-  `--defaults=/absolute/path/to/thesis-root/pandoc-thesis.yaml`
-- Do **not** also pass `--citeproc`, `--csl`, `--bibliography`, `--pdf-engine`,
-  `--lua-filter`, or `-V header-includes=...` — those live in
-  `pandoc-thesis.yaml` / `chapters/00-meta.md`. The plugin splits args on spaces
-  and mishandles backslashes/quotes.
+Document options stay in `chapters/00-meta.md` (not in any Obsidian plugin):
+`fontset=none`, degree, secrecy, `library`/`print`, OS, `short`/`long`,
+`STEM`/`HSS`, and report profile (`thesis` / `coursework` / `generic`).
 
 ### LuaTikZ (live TikZ preview)
 
-`.obsidian/plugins/luatikz/data.json`:
-
-```json
-{
-  "renderEngine": "lualatex",
-  "lualatexPath": "/Library/TeX/texbin/lualatex",
-  "enableLocalShellRenderer": true,
-  "outputFormat": "svg",
-  "timeoutMs": 15000,
-  "cacheEnabled": true,
-  "extraPreamble": "\\usepackage{luatexja-fontspec}\n\\setmainjfont{Songti SC}"
-}
-```
-
-- Keep the LuaTikZ scratch/temp folder **out of iCloud-synced** plugin dirs
-  (iCloud can fail with `I can't write on file ... .aux`). Symlink its
-  `.luatikz-temp` to a local path, e.g. `/private/tmp/obsidian-luatikz-temp`.
-- After changing settings: reload Obsidian (or disable/enable LuaTikZ), then
-  clear the LuaTikZ cache if a stale SVG persists.
-
-### Txt as MD
-
-- `Settings > Txt as MD` → add `tex` to allowed extensions → restart Obsidian so
-  `.tex` files open inside Obsidian.
-
+- `lualatexPath` = absolute path from `command -v lualatex` (or probe dirs)
+- Preamble includes `luatexja-fontspec` + `Songti SC` for Chinese preview
+- Keep the LuaTikZ scratch/temp folder **out of iCloud-synced** plugin dirs if
+  the vault syncs through iCloud
+- **Fence content:** only `\begin{tikzpicture}…\end{tikzpicture}` (optional
+  `\usetikzlibrary{…}`). Never wrap `\begin{figure}` / `\caption` / `\label`
+  inside `` ```luatikz `` — that blanks the Obsidian preview. Use `% caption:` /
+  `% label:` comments for PDF floats (`tikz.lua`). See AUTHORING.md §Figures — TikZ.
 ## Phase 5: Pre-flight check
 
 - Math: new note, type `$$ \sum_{i=1}^n $$`, confirm it renders.
 - TikZ: open a note with a `luatikz` block, wait 2–3s, confirm SVG in reading mode.
 - Zotero bridge: Zotero Integration hotkey (e.g. `Cmd+Shift+O`) → search → import
   → confirm a note appears under `literatures/` with title/abstract/annotations.
-- Full build: `cd <thesis-root> && ./scripts/build-thesis.sh` → `毕业论文.pdf` is produced by default.
-- Custom output name: `cd <thesis-root> && ./scripts/build-thesis.sh my-thesis.pdf`.
+- Full build (terminal **or** Obsidian Shell commands → `./buaa/scripts/build.sh`):
+
+  ```bash
+  cd <thesis-root>
+  ./buaa/scripts/build.sh              # → Artifact.pdf
+  ./buaa/scripts/build.sh my-thesis.pdf
+  ```
+
+- Spot-check fonts: `pdffonts Artifact.pdf` (expect SimSun / SimHei / Times New Roman / Cambria Math as embedded).
 
 ## Completion criteria
 
 - Zotero auto-updates `references.bib`.
 - Zotero Integration generates literature notes from your import template.
-- Markdown drafts export through Pandoc with citations resolved (superscript).
-- Math and TikZ render inside Obsidian.
-- `.tex` files open and edit directly in Obsidian.
+- Shell commands runs `./buaa/scripts/build.sh` from Obsidian (or the same
+  script from a terminal) and produces a PDF with citations resolved
+  (superscript) and without missing-font / missing-class errors.
+- Math and TikZ render inside Obsidian (if LuaTikZ is installed).

@@ -14,14 +14,13 @@
       {\zihao{-4} \buaa@latin~\par \@abstrcten \par}
     }
   \end{spacing}
-  \ifthenelse{\equal{\@beginright}{off}}{\clearpage}{\clearautopage}
+  \clearpage
 }}
 
 \renewcommand{\checkinput}{%
   \ifthenelse{\isundefined{\@titlecn}}{\errmessage{Please set title by 'Title'.}}{}
   \ifthenelse{\isundefined{\@authorcn}}{\errmessage{Please set author by 'Author'.}}{}
   \buaa@validateChoice{\@refcolor}{refcolor}
-  \buaa@validateChoice{\@beginright}{beginright}
 }
 
 \renewcommand{\buaa@buildFrontMatter}{%

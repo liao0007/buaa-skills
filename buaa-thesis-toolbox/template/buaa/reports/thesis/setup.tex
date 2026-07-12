@@ -1,0 +1,60 @@
+%% buaa/reports/thesis/setup.tex — BUAA graduate thesis profile
+\buaa@input{i18n/buaa-secret}
+\buaa@input{i18n/buaa-degree}
+\buaa@input{i18n/buaa-departments}
+
+\input{buaa/reports/thesis/frontmatter/cover-cn}
+\input{buaa/reports/thesis/frontmatter/cover-en}
+\input{buaa/reports/thesis/frontmatter/cover-inner}
+\input{buaa/reports/thesis/frontmatter/statement}
+\input{buaa/reports/thesis/frontmatter/abstract}
+\input{buaa/reports/thesis/frontmatter/denotation}
+
+\input{buaa/reports/thesis/backmatter/summary}
+\input{buaa/reports/thesis/backmatter/appendix}
+\input{buaa/reports/thesis/backmatter/achievement}
+\input{buaa/reports/thesis/backmatter/acknowledgments}
+\input{buaa/reports/thesis/backmatter/biography}
+
+\renewcommand{\checkinput}{%
+  \ifthenelse{\isundefined{\@titlecn}}{\errmessage{Please set title by 'Title'.}}{}
+  \ifthenelse{\isundefined{\@department}}{\errmessage{Please set department by 'Department'.}}{}
+  \ifthenelse{\isundefined{\@departmenten}}{\errmessage{Please set English department by 'Department'.}}{}
+  \ifthenelse{\isundefined{\@degree}}{\errmessage{Please set English degree by 'Degree'.}}{}
+  \ifthenelse{\isundefined{\@major}}{\errmessage{Please set major by 'Major'.}}{}
+  \ifthenelse{\isundefined{\@feild}}{\errmessage{Please set feild by 'Feild'.}}{}
+  \ifthenelse{\equal{\buaa@thesis}{master} \OR \equal{\buaa@thesis}{doctor}}{%
+    \ifthenelse{\isundefined{\@discipline}}{\errmessage{Please set discipline by 'Discipline'.}}{}
+    \ifthenelse{\isundefined{\@direction}}{\errmessage{Please set direction by 'Direction'.}}{}
+  }{}
+  \ifthenelse{\isundefined{\@tutorcn}}{\errmessage{Please set tutor name by 'Tutor'.}}{}
+  \ifthenelse{\isundefined{\@authorcn}}{\errmessage{Please set author name by 'Author'.}}{}
+  \ifthenelse{\isundefined{\@studentid}}{\errmessage{Please set student ID by 'StudentID'.}}{}
+  \ifthenelse{\isundefined{\@dateenrolly}}{\errmessage{Please set enroll date by 'DateEnroll'.}}{}
+  \ifthenelse{\isundefined{\@dategraduatey}}{\errmessage{Please set graduate date by 'DateGraduate'.}}{}
+  \ifthenelse{\isundefined{\@datesubmity}}{\errmessage{Please set submit date by 'DateSubmit'.}}{}
+  \ifthenelse{\isundefined{\@datedefencey}}{\errmessage{Please set defence date by 'DateDefence'.}}{}
+  \buaa@validateChoice{\@refcolor}{refcolor}
+  \ifthenelse{\isundefined{\@listfigtab}}{}{%
+    \buaa@validateChoice{\@listfigtab}{listfigtab}}
+}
+
+\renewcommand{\buaa@buildFrontMatter}{%
+  \makecovercn
+  \makecoveren
+  \makecoverinner
+  \makestatementbuaa
+  \buaa@numberedMatterPageStyle
+  \abstructkeyword
+  \makecontextlist
+  \denotation
+}
+
+\renewcommand{\buaa@setupMainMatterHeaders}{%
+  \buaa@ifsMastersThesis{%
+    \fancyhead[CO]{\vspace{-6pt}\zihao{-5}\SimSunPageNum
+      \parbox{15cm}{\centering 北京航空航天大学硕士学位论文\\{\quad}}}}{%
+  \buaa@ifsDoctorThesis{%
+    \fancyhead[CO]{\vspace{-6pt}\zihao{-5}\SimSunPageNum
+      \parbox{15cm}{\centering 北京航空航天大学博士学位论文\\{\quad}}}}{}}
+}

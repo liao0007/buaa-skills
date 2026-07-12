@@ -3,16 +3,20 @@
 \newcommand{\refcolor}[1]{\gdef\@refcolor{#1}}
 \def\@emptypagewords{}
 \newcommand{\emptypagewords}[1]{\gdef\@emptypagewords{#1}}
-\def\@beginright{}
-\newcommand{\beginright}[1]{\gdef\@beginright{#1}}
 
 \newcommand{\Title}[2]{\gdef\@titlecn{#1} \gdef\@titleen{#2}}
 \newcommand{\Subtitle}[2]{\gdef\@subtitlecn{#1} \gdef\@subtitleen{#2}}
-\newcommand{\Department}[1]{\gdef\@department{#1}}
-\def\@branch{工学}
+\NewDocumentCommand{\Department}{m g}{%
+  \gdef\@department{#1}%
+  \IfNoValueTF{#2}{\gdef\@departmenten{\TranDepartment{#1}}}{\gdef\@departmenten{#2}}%
+}
+\def\@branch{\buaa@ifsMastersThesis{工程}{工程}}
 \newcommand{\Branch}[1]{\gdef\@branch{#1}}
+\newcommand{\Degree}[1]{\gdef\@degree{#1}}
 \newcommand{\Major}[1]{\gdef\@major{#1}}
 \newcommand{\Feild}[1]{\gdef\@feild{#1}}
+\newcommand{\Discipline}[1]{\gdef\@discipline{#1}}
+\newcommand{\Direction}[1]{\gdef\@direction{#1}}
 \newcommand{\Tutor}[3]{\gdef\@tutorcn{#1} \gdef\@tutoren{#2} \gdef\@tutordegree{#3}}
 \newcommand{\Cotutor}[3]{%
   \gdef\@cotutorcn{#1}%
@@ -20,6 +24,7 @@
   \gdef\@cotutordegree{#3}}
 \newcommand{\Author}[2]{\gdef\@authorcn{#1} \gdef\@authoren{#2}}
 \newcommand{\StudentID}[1]{\gdef\@studentid{#1}}
+\newcommand{\SpecialProg}[1]{\gdef\@specialprog{#1}}
 
 \newcommand{\CLC}[1]{\gdef\@clc{#1}}
 \newcommand{\DateEnroll}[3]{%
@@ -35,6 +40,7 @@
 \newcommand{\Keyword}[2]{\gdef\@keywordcn{#1} \gdef\@keyworden{#2}}
 \newcommand{\Listfigtab}[1]{\gdef\@listfigtab{#1}}
 \newcommand{\Abbreviations}[1]{\gdef\@abbreviations{#1}}
+\newcommand{\Signs}[1]{\gdef\@signs{#1}}
 
 %% Optional metadata for coursework / generic profiles
 \newcommand{\Course}[1]{\gdef\@course{#1}}

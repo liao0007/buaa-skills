@@ -1,0 +1,11 @@
+{
+  "renderEngine": "lualatex",
+  "lualatexPath": "__LUALATEX_PATH__",
+  "enableLocalShellRenderer": true,
+  "showInstallNotice": false,
+  "outputFormat": "svg",
+  "timeoutMs": 15000,
+  "cacheEnabled": true,
+  "extraPreamble": "\\usepackage{luatexja-fontspec}\n\\setmainjfont{Songti SC}",
+  "inlineLivePreviewEnabledByDefault": true
+}

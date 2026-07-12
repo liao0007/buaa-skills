@@ -1,658 +1,356 @@
 # BUAA Markdown Thesis Template (`buaa`)
 
-A Markdown-first workflow for writing a Beihang University (BUAA) master's / doctoral
-thesis in Obsidian and exporting a standards-compliant PDF through Pandoc + XeLaTeX.
+Write a Beihang University graduate thesis in **Markdown** (Obsidian-friendly), then build a
+standards-aligned PDF with **Pandoc + XeLaTeX**.
 
-You write plain Markdown in Obsidian (with live math, TikZ, and citation previews),
-and a single Pandoc command turns it into a fully formatted thesis PDF. The default
-report profile is `buaa-thesis`, which produces the BUAA graduate-thesis covers,
-declaration, bilingual abstract, TOC, Chinese fonts, per-page circled footnotes,
-superscript GB/T 7714 citations, headers, and the standard back matter
-(结论 / 参考文献 / 附录 / 致谢 …).
+This repository is a **minimal syntax demo**, not a full research thesis: two body chapters
+document configuration and sample markup; back-matter files only exercise the required
+commands. Replace them with your own chapters when you start writing.
 
----
+The LaTeX side is a modular port of official BUAAThesis **v4.1.0** conventions:
+`buaa/core/` (shared) + `buaa/reports/<profile>/` (covers, TOC, headers, back matter).
+The demo uses report profile `thesis` and degree option `professional`.
 
-## 1. How it fits together
-
-```
-chapters/*.md ──▶ build-thesis.sh [output.pdf] ──▶ Pandoc ──▶ LaTeX(buaa.cls) ──▶ XeLaTeX ──▶ chosen output PDF
-      │                                           │
-      └─ 00-meta.md + sorted chapter files       buaa/reports/buaa-thesis builds front/back matter
-```
-
-| Layer | File | Role |
-|-------|------|------|
-| Draft | `chapters/*.md` | Thesis metadata and content split into sorted chapter files |
-| Pandoc defaults | `pandoc-thesis.yaml` | Minimal shared build settings: reader, PDF engine, citeproc, chapter division, filters |
-| Document class | `buaa.cls` + `buaa/` | Thin class loader plus modular core/report-profile implementation |
-| Citation style | `gb-t-7714-2015-numeric-superscript.csl` | GB/T 7714-2015 numeric superscript |
-| Bibliography | `references.bib` | Auto-exported from Zotero (Better BibTeX) |
-| Zotero note template | `zotero_literature_template.md` | Zotero Integration import format for `literatures/*.md` |
-| TikZ filter | `scripts/tikz.lua` | Turns ` ```luatikz ` / ` ```tikz ` blocks into figures |
-| Table filter | `scripts/full-width-tables.lua` | Auto-sizes table column widths from content |
-
-### Folder layout
-
-```
-thesis-root/
-├── README.md                     ← this file
-├── buaa.cls                      ← thin class loader
-├── buaa/                         ← shared core + report profiles
-├── pandoc-thesis.yaml            ← Pandoc --defaults file
-├── references.bib                ← Zotero-exported bibliography
-├── zotero_literature_template.md ← Zotero Integration import format (Nunjucks)
-├── gb-t-7714-2015-numeric-superscript.csl  ← GB/T 7714-2015 citation style
-├── 毕业论文.pdf / custom.pdf      ← compiled thesis; filename comes from scripts/build-thesis.sh
-├── chapters/
-│   ├── 00-meta.md                ← thesis-specific metadata + class options
-│   ├── 01-引言.md
-│   ├── ...
-│   ├── 90-结论.md
-│   └── 95-作者简介.md
-├── literatures/                  ← Zotero-generated literature notes
-│   ├── smith2020.md
-│   └── ...
-├── scripts/
-│   ├── build-thesis.sh           ← sorted multi-file Pandoc build
-│   ├── tikz.lua                  ← TikZ code-block filter
-│   └── full-width-tables.lua     ← table column-width filter
-├── assets/
-│   ├── logo-buaa.eps
-│   ├── head-master.eps
-│   ├── head-doctor.eps
-│   ├── head-professional.eps
-│   └── head-prodoctor.eps
-└── buaa/reports/
-    ├── README.md                 ← profile architecture notes
-    ├── buaa-thesis/              ← default thesis profile
-    ├── coursework/               ← course/lab report profile
-    └── generic/                  ← minimal generic report profile
-```
+Report profiles: [`buaa/reports/README.md`](buaa/reports/README.md).
 
 ---
 
-## 2. Compiling
-
-### Command line (canonical)
+## 1. Quick start
 
 ```bash
 cd /path/to/thesis-root
-./scripts/build-thesis.sh
-# or
-./scripts/build-thesis.sh custom-output.pdf
+./buaa/scripts/build.sh              # → Artifact.pdf
+./buaa/scripts/build.sh my-thesis.pdf
 ```
 
-The build script collects every `chapters/*.md` file, sorts them by file name, and
-passes them to Pandoc in that order. Its first positional argument overrides the
-output filename; if omitted, it defaults to `毕业论文.pdf`:
+Checked-in PDFs (not produced by every build): `输出示例.pdf` (this template) and
+`官方示例.pdf` (official BUAAThesis reference).
 
-```bash
-pandoc \
-  "chapters/00-meta.md" \
-  "chapters/01-引言.md" \
-  "chapters/02-文献综述.md" \
-  "..." \
-  "chapters/95-作者简介.md" \
-  --defaults "./pandoc-thesis.yaml" \
-  -o "$output_file"
-```
+Requirements: **Pandoc ≥ 3**, **XeLaTeX** (MacTeX / TeX Live), and the fonts under
+`buaa/font/` (keep them with the template).
 
-That single `--defaults` file already sets the input extensions, `xelatex`, `citeproc`,
-chapter division, and the two Lua filters. Thesis-specific metadata such as `indent: true`
-stays in `chapters/00-meta.md`.
+Always run from the thesis root so `./buaa/…` and `./references.bib` resolve correctly.
+The build script sets `TEXINPUTS` to include `buaa//` so `buaa.cls` and its `\input` tree load.
 
-> **Always run from the thesis root.** All relative paths (`./assets/…`,
-> `./references.bib`, `./scripts/…`) are resolved from that directory.
-
-### Chapter files
-
-The current thesis is split under `chapters/`:
-
-| File pattern | Role |
-|--------------|------|
-| `00-meta.md` | Thesis-specific `buaa.cls` metadata, class options, bibliography, and LaTeX commands |
-| `01-*.md` to `89-*.md` | Main thesis chapters, sorted by file name |
-| `90-*.md` and later | Back matter such as 结论, 参考文献, 附录, 学术成果, 致谢, 作者简介 |
-
-Use numeric prefixes with leading zeroes so lexical sort matches thesis order.
-
-### From Obsidian (Obsidian Pandoc plugin)
-
-The plugin is configured in `.obsidian/plugins/obsidian-pandoc/data.json` with:
-
-```
---defaults=/absolute/path/to/thesis-root/pandoc-thesis.yaml
-```
-
-Do not add `--citeproc`, `--csl`, `--pdf-engine`, or `--lua-filter` again in plugin
-arguments if `--defaults=.../pandoc-thesis.yaml` is already present.
-
-### Requirements
-
-- MacTeX / TeX Live with **XeLaTeX** (`ctexbook`, `fontspec`, `unicode-math`, `tikz`).
-- **Pandoc** ≥ 3.x.
-- Fonts (any one per slot; the class falls back automatically):
-  - CJK serif 正文: SimSun / STSong / **Songti SC** / FandolSong / Noto Serif CJK SC
-  - CJK sans 黑体: SimHei / STHeiti / **Heiti SC** / FandolHei / Noto Sans CJK SC
-  - Latin: **Times New Roman** / TeX Gyre Termes
-  - Math: XITS Math / **STIX Two Math** / TeX Gyre Termes Math
+**In Obsidian:** install the **Shell commands** plugin, set working directory to the
+thesis root, and add `./buaa/scripts/build.sh` (alias e.g. `Build thesis PDF`).
+Run it from the command palette or a hotkey. Terminal builds remain available the
+same way. No Obsidian Pandoc export plugin is used.
 
 ---
 
-## 3. The draft files (`chapters/*.md`)
+## 2. Architecture
 
-### 3.1 Defaults vs thesis metadata
+```
+chapters/*.md  ──▶  ./buaa/scripts/build.sh
+                         │  (sorted filename order)
+                         ▼
+              Pandoc (--defaults buaa/pandoc.yaml)
+                         │  Lua filters → citeproc → bilingual-etal
+                         ▼
+              buaa/buaa.cls
+                ├── core/          shared packages, layout, metadata, hooks
+                ├── font/setup.tex bundled CJK + Times + math
+                └── reports/<profile>/setup.tex
+                         │
+                         ▼
+              XeLaTeX  ──▶  PDF
+```
 
-Only the settings that work best as Pandoc defaults stay in `pandoc-thesis.yaml`:
+| Piece | Path | Role |
+|-------|------|------|
+| Metadata + chapters | `chapters/*.md` | Sorted by filename; `00-meta.md` first |
+| Bibliography | `references.bib` | Zotero Better BibTeX export |
+| Reading notes | `literatures/` | Optional Zotero Integration notes |
+| Pandoc defaults | `buaa/pandoc.yaml` | Reader, engine, filters |
+| Class loader | `buaa/buaa.cls` | Thin loader → core + report profile |
+| Shared LaTeX | `buaa/core/*.tex` | Options, packages, layout, hooks, document lifecycle |
+| Report profiles | `buaa/reports/{thesis,coursework,generic}/` | Front/back matter per document type |
+| CSL | `buaa/gb-t-7714-2015-numeric-superscript.csl` | GB/T 7714-2015 numeric superscript |
+| Filters | `buaa/scripts/*.lua` | Table widths, continued captions, TikZ, et al. |
+| Build | `buaa/scripts/build.sh` | Collect `chapters/*.md` → Pandoc |
+
+### Class load order (`buaa.cls`)
+
+1. `core/input.tex` — path helpers + `\buaa@loadreport`
+2. `core/options.tex` — class options (profile, degree, secrecy, …)
+3. `ctexbook` — base class
+4. `core/{packages,helpers,math,metadata,layout,hooks}.tex`
+5. `reports/<profile>/setup.tex` — overrides hooks; inputs front/back fragments
+6. `core/document.tex` — `\AtBeginDocument` / `\AfterEndPreamble` lifecycle
+
+### `buaa/core/` modules
+
+| File | Role |
+|------|------|
+| `input.tex` | `\buaa@input`, `\buaa@loadreport` |
+| `options.tex` | Profile / degree / secrecy / library\|print / OS / STEM\|HSS |
+| `packages.tex` | Package set, `\englogo`, `\BUAAThesisVer` |
+| `helpers.tex` | Loads `buaa/font/setup.tex`; shared utilities |
+| `math.tex` | Math / theorem setup |
+| `metadata.tex` | `\Title`, `\Author`, `\Bib`, coursework fields, … |
+| `layout.tex` | Fixed geometry, page styles, `\makecontextlist` |
+| `hooks.tex` | Default stubs for profile hooks |
+| `document.tex` | Begin-document / end-preamble lifecycle |
+
+Defaults when options are omitted: profile `thesis`, degree `master`, `public`,
+`library`, `mac`, `short`, `STEM`. The demo overrides degree to `professional`.
+
+### Layout
+
+```
+thesis-root/
+├── README.md
+├── references.bib
+├── 输出示例.pdf                ← checked-in build from this Markdown template
+├── 官方示例.pdf                ← official BUAAThesis reference PDF (read-only)
+├── Artifact.pdf                ← default name from ./buaa/scripts/build.sh
+├── chapters/
+│   ├── 00-meta.md              ← classoption + \Title / \Author / …
+│   ├── 01-导读与配置.md         ← how to configure (demo)
+│   ├── 02-语法示例.md           ← citations, tables, TikZ, math, algorithms (demo)
+│   ├── 90-结论.md              ← \summary
+│   ├── 91-参考文献.md          ← \buaareferences + ::: {#refs}
+│   ├── 92-附录.md              ← \appendix
+│   ├── 93-学术成果.md          ← \achievement
+│   ├── 94-致谢.md              ← \acknowledgments
+│   └── 95-作者简介.md          ← \biography
+├── literatures/
+│   ├── zotero_literature_template.md
+│   └── <citekey>.md            ← example notes
+└── buaa/
+    ├── buaa.cls
+    ├── pandoc.yaml
+    ├── gb-t-7714-2015-numeric-superscript.csl
+    ├── scripts/                ← build.sh + Lua filters
+    ├── assets/logo-buaa.eps
+    ├── font/ + setup.tex       ← SimSun/Hei/Kai/Fang, Xingkai, Times, Cambria Math
+    ├── i18n/                   ← secret / degree / department strings (thesis)
+    ├── core/                   ← shared infrastructure
+    └── reports/
+        ├── README.md
+        ├── thesis/             ← graduate thesis (default)
+        ├── coursework/         ← course / lab report
+        └── generic/            ← minimal title + optional abstract + TOC
+```
+
+---
+
+## 3. Demo chapters vs your thesis
+
+| File | Demo purpose | When writing for real |
+|------|----------------|------------------------|
+| `00-meta.md` | Sample MBA / professional metadata | Replace with your title, author, dates, abstract |
+| `01-导读与配置.md` | Full option reference for `00-meta` | Delete or rewrite as 引言 |
+| `02-语法示例.md` | Copy-paste markup samples | Delete or keep a private cheat-sheet chapter |
+| `90`–`95` | Short stubs for each back-matter command | Fill with real content |
+
+Body files are numbered so lexical sort = thesis order (`01`…`89` main, `90+` back matter).
+`build.sh` does not hard-code chapter names: any `chapters/*.md` is included.
+
+---
+
+## 4. Configuration
+
+### 4.1 `buaa/pandoc.yaml` (build only)
 
 ```yaml
 from: markdown+raw_tex+tex_math_dollars+pipe_tables
 to: pdf
 pdf-engine: xelatex
-citeproc: true
 top-level-division: chapter
+variables:
+  lmodern: false
 filters:
-  - scripts/full-width-tables.lua
-  - scripts/tikz.lua
+  - buaa/scripts/full-width-tables.lua
+  - buaa/scripts/longtable-continued.lua
+  - buaa/scripts/tikz.lua
+  - citeproc
+  - buaa/scripts/bilingual-etal.lua
 ```
 
-Most thesis-specific configuration is centralized in `chapters/00-meta.md`:
+- `raw_tex` is required for `\summary`, `\ref{…}`, `\footnote{…}`, etc.
+- **citeproc is a filter** — do not also set `citeproc: true` or pass `--citeproc`.
+- `lmodern: false` keeps Latin text on Times New Roman (`buaa/font/setup.tex`).
+
+### 4.2 `chapters/00-meta.md` (document)
+
+Demo `classoption` list:
 
 ```yaml
----
-bibliography: ./references.bib
 classoption:
-  - fontset=fandol
-  - master
-  - public
-  - twoside
-csl: ./gb-t-7714-2015-numeric-superscript.csl
-documentclass: buaa
-indent: true
-link-citations: true
-numbersections: true
-header-includes:
-  - \geometry{top=25mm,bottom=25mm,left=25mm,right=25mm,bindingoffset=0mm}
-  - \Abstract{...}{...}
-  - \Title{硕士论文题目示例}{Sample Title for Master's Thesis}
-  - \Author{作者姓名}{Author Name}
-  - \CLC{F270}
-  - \Department{经济管理学院}
-  - \Keyword{关键词一，关键词二，关键词三}{Keyword One, Keyword Two, Keyword Three}
-  - \Major{工商管理}
-  - \Feild{研究方向示例}
-  - \StudentID{ZY0000000}
-  - \Subtitle{副标题示例（可选）}{Sample Subtitle (Optional)}
-  - \Tutor{导师姓名}{Supervisor Name}{教授}
-  - ...
----
+  - fontset=none      # bundled fonts via buaa/font/setup.tex
+  - professional      # master | professional | doctor | prodoctor
+  - public            # secrecy
+  - library           # library | print  (print adds blank verso pages)
+  - mac
+  - short             # short | long title block
+  - STEM              # STEM | HSS heading style
+  - thesis            # thesis | coursework | generic
 ```
 
-Key points:
+Put cover fields in `header-includes` as LaTeX commands (`\Title`, `\Author`, `\Abstract`, …),
+not as free YAML keys. Full tables of fields and commands: **`chapters/01-导读与配置.md`**.
 
-- `from: markdown+raw_tex+…` — **`raw_tex` is required** so inline commands like
-  `\summary`, `\chaptera{参考文献}`, `\ref{…}`, `\footnote{…}` pass straight through.
-- `fontset=fandol` avoids local macOS CJK font lookup failures while still defining
-  the `\songti` and `\heiti` commands used by `buaa.cls`.
-- `classoption:` belongs with the thesis metadata in `00-meta.md`. That is where you
-  choose the report profile (`buaa-thesis`, `coursework`, `generic`) and the thesis
-  options such as `master`, `public`, and `twoside`.
-- `citeproc: true` must stay in `pandoc-thesis.yaml`; when it is placed only in
-  `00-meta.md`, Pandoc does not run the citeproc processing stage early enough.
-- `to: pdf`, `pdf-engine: xelatex`, `from`, `top-level-division`, and Lua filters
-  stay in `pandoc-thesis.yaml` because they are build execution settings rather than
-  document metadata.
-- Put thesis metadata inside `header-includes` as `\Command{}` calls, **not** as loose
-  YAML keys — the class reads them via LaTeX, and the plugin mishandles spaces/backslashes
-  in the extra-arguments field.
+Notes:
 
-### 3.2 Body structure
+- Academic `master` / `doctor` also require `\Discipline` and `\Direction`.
+- Page geometry is **fixed** in `buaa/core/layout.tex`. Later `\geometry{…}` is ignored.
+- Load TikZ from `header-includes` if you use `luatikz` / `tikz` blocks.
+- Degree / secrecy / library options primarily affect the `thesis` profile; other profiles ignore unused metadata.
 
-Because `pandoc-thesis.yaml` sets `top-level-division: chapter`:
+### 4.3 Back-matter commands (thesis profile)
 
-| Markdown | Becomes | Numbering (science/engineering decimal) |
-|----------|---------|-----------|
-| `#` | 章 (chapter) | 第1章、第2章… |
-| `##` | 节 (section) | 1.1、1.2… |
-| `###` | 条 (subsection) | 1.1.1、1.1.2… |
-| `####` | (subsubsection) | 1.1.1.1… |
-
-Chapter headings render centered as `第N章  标题`; running headers show
-`第N章 标题`. Figures/tables are numbered continuously (图1, 图2, 表1) in the
-main body and switch to A.1/A.2 in the appendix.
-
-### 3.3 Front matter and back matter commands
-
-These `\Command{}` macros come from `buaa.cls` and are written directly in the Markdown
-body (thanks to `raw_tex`):
-
-| Command | Produces |
-|---------|----------|
-| *(none)* | The active report profile automatically generates its front matter after `\begin{document}`. In the default `buaa-thesis` profile, that means cover pages, declaration, abstract, and TOC. |
-| `\summary` | 结论 (unnumbered chapter) |
-| `\chaptera{参考文献}` | 参考文献 heading for Pandoc citeproc output |
-| `\appendix` | 附~~录 (switches figures/tables to A.1, A.2 numbering) |
-| `\achievement` | 攻读硕士学位期间取得的学术成果 |
+| Command | Page |
+|---------|------|
+| `\summary` | 结论 |
+| `\buaareferences` … `\buaareferencesend` | Wrap citeproc `::: {#refs}` |
+| `\appendix` | Appendix chapters from following `#` headings |
+| `\achievement` | 学术成果 |
 | `\acknowledgments` | 致谢 |
 | `\biography` | 作者简介 |
-| `\chaptera{标题}` | A custom unnumbered appendix-style chapter |
+| `\chaptera{标题}` | Extra unnumbered appendix-style chapter |
 
-The bibliography itself is emitted by citeproc where you place the div:
+Front matter (covers, statement, abstract, TOC, optional lists) is built automatically by
+the `thesis` profile after `\begin{document}`.
+
+For `coursework` / `generic` command sets and required metadata, see
+[`buaa/reports/README.md`](buaa/reports/README.md).
+
+---
+
+## 5. Writing syntax (see also `02-语法示例.md`)
+
+### Citations
 
 ```markdown
-\chaptera{参考文献}
-
-::: {#refs}
-:::
+[@jensen1976]
+[@fama1983; @liweian2005]
 ```
 
----
+CSL path in `00-meta.md`; bibliography in `references.bib`. Only **cited** entries appear
+under 参考文献.
 
-## 4. Thesis metadata reference (`\Command{}`)
+### Footnotes
 
-The copied template defaults to the `buaa-thesis` report profile. The `buaa` class is
-now modular: shared infrastructure lives under `buaa/core/`, while front matter, header
-logic, metadata checks, and back-matter commands are defined by the active profile under
-`buaa/reports/<name>/`.
+Use LaTeX footnotes (not Pandoc `[^id]`):
 
-### 4.1 Content commands
+```markdown
+Sentence.\footnote{Note text.}
+```
 
-| Command | Arguments | Notes |
-|---------|-----------|-------|
-| `\Title{中}{en}` | Chinese / English title | |
-| `\Subtitle{中}{en}` | subtitle | optional |
-| `\Author{中}{en}` | author name | |
-| `\StudentID{...}` | student number | printed as `10006<id>` |
-| `\Department{中}` | school / department | English school name is translated by `buaa.cls` for known schools |
-| `\Major{中}` | major / discipline | |
-| `\Feild{中}` | research field | The class command is misspelled as `Feild`; use that spelling |
-| `\Tutor{中}{en}{职称}` | supervisor + title (职称) | |
-| `\Cotutor{中}{en}{职称}` | co-supervisor | optional |
-| `\CLC{...}` | CLC classification no. | |
-| `\Branch{...}` | discipline category (e.g. 工学 Engineering) | defaults to 工学 |
-| `\Abstract{中文摘要}{English abstract}` | abstract bodies (Chinese / English) | |
-| `\Keyword{中文关键词}{English keywords}` | keywords (Chinese / English) | |
-| `\DateEnroll{m}{d}{y}` … | enroll / submit / defence dates | `\DateGraduate`, `\DateSubmit`, `\DateDefence` |
+The class renders per-page circled markers (①②③…). See `chapters/02-语法示例.md`.
 
-### 4.2 Class options (`classoption:`)
+### Tables (Markdown-first)
 
-| Group | Values | Meaning |
-|-------|--------|---------|
-| Report profile | `buaa-thesis` · `coursework` · `generic` | Selects the front matter / back matter bundle; this template uses `buaa-thesis` by default |
-| Degree | `master` · `professional` · `doctor` · `prodoctor` | master's / prof. master's / doctoral / prof. doctoral (affects cover + header text) |
-| Print | `oneside` · `twoside` | single/double-sided layout & headers |
-| Secrecy | `public` · `privacy` · `secret[3/5/10/*]` · `classified[…]` · `topsecret[…]` | secrecy level (密级) label on cover |
-| Fonts | `fontset=fandol` | recommended for stable Pandoc + XeLaTeX export |
+```markdown
+Table: Caption {#tab:id}
 
-For this thesis template, keep `buaa-thesis` unless you are intentionally repurposing
-the class for a different kind of report. See `buaa/reports/README.md` if you want to
-switch profiles or add your own.
+| Col A | Col B |
+| ----- | ----- |
+| …     | …     |
+```
 
----
+- Prefer pipe tables over hand-written `table` / `longtable`.
+- Pandoc emits `longtable` (page breaks + repeated headers).
+- `full-width-tables.lua` sets column widths; `longtable-continued.lua` adds `题注（续）`
+  on continuation pages.
+- Cross-ref: `\ref{tab:id}`.
 
-## 5. Figures, TikZ, tables, math
+### TikZ figures
 
-### 5.1 TikZ (Obsidian preview + PDF export)
-
-Write a **plain** `luatikz` block so the Obsidian LuaTikZ plugin can render it live:
+Obsidian LuaTikZ previews **only** `tikzpicture`. Do **not** wrap
+`\begin{figure}` / `\caption` / `\label` inside the fence (preview stays blank).
+Put PDF caption/label as comments; `tikz.lua` builds the float at compile time.
 
 ````markdown
 ```luatikz
+% caption: Title
+% label: fig:id
 \begin{tikzpicture}
-\draw (0,0) circle (1cm);
+…
 \end{tikzpicture}
 ```
 ````
 
-For a **numbered, captioned, cross-referenceable** figure in the PDF, add two LaTeX
-comment lines at the top of the block. Obsidian ignores them (they're `%` comments),
-but `scripts/tikz.lua` reads them:
+Reference with `\ref{fig:id}` (not `@fig:…`).
 
-````markdown
-```luatikz
-% caption: TikZ circle example
-% label: fig:tikz-circle
-\begin{tikzpicture}
-\draw (0,0) circle (1cm);
-\end{tikzpicture}
-```
-````
+### Math & algorithms
 
-Then reference it in text with `\ref{fig:tikz-circle}` (use `\ref{…}`, **not** `@fig:…`,
-which would collide with citeproc).
-
-What `tikz.lua` does:
-- Accepts block classes `luatikz` or `tikz`.
-- Reads `% caption:` / `% label:` lines (or Pandoc attributes `{#fig:x caption="…"}`).
-- With a caption/label → wraps in `\begin{figure}[htbp]\centering … \caption{} \label{} \end{figure}`.
-- Without → wraps in `\begin{center} … \end{center}` (no number).
-- Strips a stray `standalone` preamble (`\documentclass`, `\usepackage`,
-  `\usetikzlibrary`) plus `\begin{document}` / existing float wrappers, so a full
-  standalone-style preview block still exports.
-
-TikZ libraries are loaded once in the draft YAML:
-
-```yaml
-header-includes:
-  - \usepackage{tikz}
-  - \usetikzlibrary{arrows.meta,positioning,fit,backgrounds}
-```
-
-**CJK text inside figures: use `\rmfamily` (Song/宋体), not bold.** Under
-`ctexbook + fontset=fandol`, Chinese `\sffamily` (sans) maps to **FandolHei (黑体)**
-— heavy strokes that look bold. Set node fonts like `font=\rmfamily\small` and avoid
-`\sffamily` / `\bfseries`, otherwise figure text exports as "bold" and clashes with the
-Song body text. **Do not use `\songti`**: it is a ctex-only command, and Obsidian's
-LuaTikZ preview (`standalone + luatexja-fontspec`, no ctex) raises `Undefined control
-sequence` and fails to preview. `\rmfamily` is a LaTeX core command that maps to Song
-(non-bold) in both the ctex build and the luatexja preview.
-
-### 5.2 Raster images
-
-```markdown
-![figure caption example](../assets/example.png)
-```
-
-Prefer local files under `assets/` (the class sets `\graphicspath` to `../assets/` and
-`assets/`). Remote URLs may fail under XeLaTeX — download them first.
-
-### 5.3 Tables
-
-Use pipe tables with an optional `Table:` caption line. `full-width-tables.lua`
-measures each column's content (CJK counted as width 2) and assigns proportional widths,
-clamped to a 6–50 range, so one long cell can't blow out the layout. Tables render in
-5-point Song (5号宋体) with 1.2 line spacing.
-
-```markdown
-Table: example table
-
-| Metric | Meaning | Note |
-| ------ | ------- | ---- |
-| A      | …       | …    |
-```
-
-### 5.4 Math
-
-Inline `$…$` and display `$$…$$` (via `tex_math_dollars`), typeset with the math font
-(`STIX Two Math` by default). `\begin{theorem}`, `\begin{definition}`, `\begin{example}`,
-`\begin{remark}` environments are predefined (numbered per chapter).
+Inline `$…$`, display `$$…$$`, `align`, and `algorithm` environments are available.
+Math font: Cambria Math when present under `buaa/font/`.
 
 ---
 
-## 6. Citations
+## 6. What the class already handles
 
-1. Manage sources in Zotero; export the library as Better BibTeX to `references.bib`
-   with **Keep updated** on (see §10, Phase 2).
-2. Cite in Markdown with Pandoc syntax:
-   - single: `[@smith2020]`
-   - multiple: `[@wang2021; @liu2022]`
-3. citeproc + the GB/T 7714-2015 numeric-superscript CSL render them as superscript
-   numbers, and build the list at the `::: {#refs}` div under `\chaptera{参考文献}`.
-
-Only cited entries appear in 参考文献 — that's normal citeproc behavior.
-
-**Do not enable citeproc twice.** It must be on in exactly one place (the draft YAML /
-`pandoc-thesis.yaml`), never also via a `--citeproc` command-line flag, or entries double.
+- Bundled CJK (Song / Hei / Kai / Fang) + cover Xingkai + Times Latin + math
+- Circled per-page footnotes; degree-specific running headers (`thesis`)
+- `library` vs `print` pagination; chapter-wise 图/表 numbers (A.1 in appendices)
+- Cover helpers: `\englogo{…}`, `\BUAAThesisVer{}`
+- Shared TOC / figure-table lists via `\makecontextlist` (`buaa/core/layout.tex`)
 
 ---
 
-## 7. Formatting the class already handles
+## 7. Troubleshooting
 
-- **Fonts** use `fontset=fandol`, so 正文 / 黑体 commands required by `buaa.cls`
-  are available under Pandoc + XeLaTeX.
-- **Footnotes**: per-page reset, circled numbers ①②③…, 小五号宋体.
-- **Headers/footers**: 硕士/博士学位论文 running head, centered page number; distinct
-  odd/even behavior under `twoside`.
-- **Back matter** (结论/参考文献/附录/…): unnumbered chapters that break with
-  `\clearpage` (not `\cleardoublepage`), so no stray blank page appears between them
-  under `twoside`.
-- **Figure/table numbering**: continuous (1, 2, 3…) in the main body, switching to
-  A.1, A.2 in the appendix.
-- **Captions**: 图/表 label in 5号宋体 bold, centered.
+| Symptom | Fix |
+|---------|-----|
+| Duplicate bibliography entries | citeproc enabled twice — keep only the filter in `pandoc.yaml` |
+| Extra blank pages | Use `library` instead of `print` |
+| TikZ won’t preview in Obsidian | Plain `` ```luatikz `` with **only** `tikzpicture`; use `% caption:` / `% label:` — never `\begin{figure}` / `\caption` / `\label` inside the fence |
+| Missing Chinese glyphs | Keep `buaa/font/` files; use `fontset=none` |
+| `\geometry` seems ignored | Intended — margins are locked by the class |
+| Long table page 2 lacks 「（续）」 | Ensure `longtable-continued.lua` is in `pandoc.yaml` |
+| `buaa.cls` / `\input` not found | Run `./buaa/scripts/build.sh` from thesis root (it sets `TEXINPUTS`) |
 
 ---
 
-## 8. Troubleshooting
+## 8. New thesis checklist
 
-| Symptom                                        | Cause                                                     | Fix                                                                                                           |
-| ---------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| Every reference appears twice                  | citeproc enabled twice (YAML *and* `--citeproc`)          | Keep it only in YAML/defaults; remove `--citeproc` from the plugin args                                       |
-| Blank page after 结论                            | `\cleardoublepage` forcing odd-page start under `twoside` | Already fixed in `buaa.cls` (`\clearpage` + `\@openrightfalse`); re-copy the class if you reverted it         |
-| TikZ won't preview in Obsidian                 | Pandoc fence attributes on the fence line                 | Use a plain ` ```luatikz ` block; put caption/label as `% caption:` / `% label:` lines inside                 |
-| `Can be used only in preamble`                 | `\setmathfont` / `\setCJKmainfont` called too late        | Don't move font setup to `begindocument/end`; the class uses `begindocument/before` + the `unicode-math` hook |
-| `Missing \begin{document}` at a bare `}`       | `\@removefromreset` placed bare in preamble               | Keep it inside the `\AtBeginDocument{\makeatletter … \makeatother}` block                                     |
-| `You have requested document class '../buaa'…` | `../` path prefix vs internal name                        | Harmless warning; ignore                                                                                      |
-| `Label 'ref-…' multiply defined`               | Same source cited in ways citeproc labels twice           | Harmless; or de-duplicate the citation                                                                        |
-| Chinese missing / tofu boxes                   | None of the CJK fonts installed                           | Install one of the §2 font options, or set `CJKmainfont`/`CJKsansfont` explicitly                             |
-| Remote image fails                             | XeLaTeX can't fetch URLs                                  | Download to `assets/` and use a local path                                                                    |
+1. Keep `buaa/` intact; edit `chapters/00-meta.md`.
+2. Replace `01` / `02` with your chapters (`01-引言.md`, …).
+3. Fill `90`–`95` (or drop unused back-matter files).
+4. Point Zotero Better BibTeX at `references.bib`; cite with `[@citekey]`.
+5. Optional: import notes via `literatures/zotero_literature_template.md`.
+6. Build with `./buaa/scripts/build.sh`.
+7. Other document types: set `coursework` or `generic` in `classoption`
+   (see `buaa/reports/README.md`).
 
 ---
 
-## 9. Quick start for a new thesis
+## 9. Environment (Obsidian + Zotero)
 
-1. Copy or rename chapter files under `chapters/` using numeric prefixes.
-2. Edit `chapters/00-meta.md` `header-includes` with your real title, author,
-   supervisor, abstract, keywords, and dates.
-3. Edit `chapters/00-meta.md` for thesis-specific metadata and `classoption:`.
-   Edit `pandoc-thesis.yaml` only for shared build execution settings such as
-   `from`, `pdf-engine`, `citeproc`, `top-level-division`, and Lua filters.
-4. Replace the skeleton chapters (`# 引言(章)` …) with your content; keep the
-   `\summary` / `\chaptera{参考文献}` / `\appendix` / `\acknowledgments` back-matter commands.
-5. Cite with `[@citekey]`; keep `references.bib` synced from Zotero.
-6. Compile:
-   ```bash
-   cd /path/to/thesis-root
-   ./scripts/build-thesis.sh
-   # or
-   ./scripts/build-thesis.sh my-thesis.pdf
-   ```
-7. Check the generated PDF (`毕业论文.pdf` by default, or the filename you passed in).
+**System:** Zotero, MacTeX/TeX Live/MiKTeX (XeLaTeX), Pandoc ≥ 3.
 
-For full environment setup (Zotero, Better BibTeX, Obsidian plugins, LuaTikZ), see §10.
+**Zotero:** Better BibTeX → auto-export `references.bib`; stable citekeys
+(e.g. `auth.lower+year`).
+
+**Obsidian plugins:**
+
+- Restored by `template-obsidian/restore-obsidian-plugins.sh <thesis-root>`
+  (auto-detects vault↔thesis relative path and `pandoc` / `xelatex` / `lualatex`).
+- **Shell commands** — `working_directory` = detected thesis-rel; command
+  `./buaa/scripts/build.sh`; alias `Build thesis PDF`; PATH aug from detected tools.
+- **Zotero Integration**, **LuaTikZ** — literature paths and `lualatexPath` set
+  for the same target layout.
+
+**Zotero Integration paths** (vault-relative; filled by restore):
+
+- Notes: `{thesis-rel}/literatures/{{citekey}}.md` (or `literatures/…` if vault = thesis)
+- Template: `{thesis-rel}/literatures/zotero_literature_template.md`
+- Insert citations as `[@{{citekey}}]`
+
+**LuaTikZ:** detected `lualatex` absolute path; Chinese preview preamble e.g.
+`luatexja-fontspec` + `Songti SC`. Keep the plugin temp directory **off iCloud** if the
+vault syncs through iCloud Drive.
 
 ---
 
-## 10. Environment setup (Obsidian, Zotero, LaTeX, Pandoc)
+## Provenance
 
-End-to-end setup for the Obsidian academic writing environment. Complete the phases in
-order — Obsidian plugins depend on system-level tools such as Zotero, LaTeX, Pandoc, and
-SVG converters.
-
-### Phase 1: System-level prerequisites
-
-- Install Zotero desktop for your operating system.
-- Install a LaTeX distribution.
-  - Windows: install MiKTeX or TeX Live.
-  - macOS: install MacTeX.
-  - Linux: install `texlive-full` through the system package manager.
-- Install Pandoc from the official Pandoc GitHub releases page.
-- Install or verify an SVG converter for TikZ rendering.
-  - Prefer `pdf2svg` or `dvisvgm`.
-  - Confirm whether `dvisvgm` is already included with MacTeX / TeX Live.
-  - On Windows, install missing converters through Chocolatey or Scoop if needed.
-- Verify command-line availability.
-  - Run `pandoc -v` and confirm a version number appears.
-  - Run `pdflatex -v` and confirm a version number appears.
-  - If either command fails, add the installation directory to the system `PATH`.
-
-### Phase 2: Zotero & bibliography configuration
-
-- Install Better BibTeX for Zotero.
-  - Download the latest `.xpi` release from the Better BibTeX GitHub repository.
-  - In Zotero, open `Tools > Add-ons`.
-  - Click the gear icon and select `Install Add-on From File`.
-- Configure predictable citation keys.
-  - Open `Zotero Preferences > Better BibTeX`.
-  - Set citation key format to `auth.lower+year`, or another predictable pattern.
-  - Confirm generated keys look like `smith2023`.
-- Establish an auto-exported bibliography file.
-  - In Zotero, select the primary library or collection.
-  - Right-click and choose `Export Library`.
-  - Select `Better BibTeX` as the export format.
-  - Enable `Keep updated`.
-  - Save the export as `thesis-root/references.bib`.
-  - Confirm Zotero updates `references.bib` after adding or changing a reference.
-
-### Phase 3: Obsidian vault structure & plugins
-
-- Confirm the thesis vault folder structure exists.
-  - `thesis-root/chapters`
-  - `thesis-root/literatures`
-  - `thesis-root/assets`
-  - `thesis-root/scripts`
-- In Obsidian, disable Safe Mode.
-  - Go to `Settings > Community Plugins`.
-  - Turn off Safe Mode.
-- Install required community plugins.
-  - Zotero Integration.
-  - Obsidian Pandoc.
-  - LuaTikZ for Obsidian live TikZ rendering.
-  - Latex Suite.
-  - Txt as MD.
-- Enable all installed plugins.
-
-### Phase 4: Obsidian plugin configuration
-
-#### Zotero Integration
-
-- Open `Settings > Zotero Integration`.
-- Confirm the Zotero database path is detected correctly.
-- Click `Add Import Format`.
-- Name the format `Literature Note`.
-- Set output path to `thesis-root/literatures/{{citekey}}.md`.
-- Set imported annotation image path to `thesis-root/literatures/{{citekey}}/`.
-- Set template file to `thesis-root/zotero_literature_template.md` (at the thesis
-  root, same level as `buaa.cls`).
-- Confirm imported notes include title, authors, year, URL, abstract, and annotations.
-- Configure citation insertion as Pandoc citation format, bracketed as `[@{{citekey}}]`.
-- Use `[[{{citekey}}]]` as the note suggestion template.
-
-#### Obsidian Pandoc
-
-- Open `Settings > Obsidian Pandoc`.
-- Configure the Pandoc executable path.
-  - Use `/opt/homebrew/bin/pandoc`.
-- Configure the PDFLaTeX path.
-  - Use `/Library/TeX/texbin/pdflatex`.
-- Set export source format to `Markdown`.
-- Add Pandoc extra arguments: `--defaults=/absolute/path/to/thesis-root/pandoc-thesis.yaml`.
-- Use the repo-local Lua filters declared in `pandoc-thesis.yaml`.
-- Do not put `-V header-includes=...` in Obsidian Pandoc extra arguments. Use document YAML `header-includes` instead, because the plugin argument field can mishandle backslashes, quoting, and spaces.
-- Put thesis-specific metadata in `chapters/00-meta.md`, for example:
-
-  ```yaml
-  ---
-  bibliography: ./references.bib
-  documentclass: buaa
-  classoption:
-    - fontset=fandol
-    - master
-    - public
-    - twoside
-  header-includes:
-    - \usepackage{tikz}
-    - \usetikzlibrary{arrows.meta,positioning,fit,backgrounds}
-  ---
-  ```
-
-- Keep font settings out of Obsidian Pandoc extra arguments when the font name contains spaces; the plugin splits extra arguments on spaces.
-- Keep CSL style and bibliography paths in `chapters/00-meta.md`; do not put `--csl=...` or `--bibliography=...` in Obsidian Pandoc extra arguments.
-- If a draft needs a LaTeX class file, keep that in document YAML too, for example:
-
-  ```yaml
-  ---
-  documentclass: report
-  classoption:
-    - a4paper
-    - oneside
-  ---
-  ```
-
-- For this BUAA workflow, keep `buaa.cls`, `assets/`, and `pandoc-thesis.yaml` in the thesis root; do not add a class option globally in Obsidian Pandoc plugin settings.
-- Keep TikZ package/library loading in each draft's YAML `header-includes`; write each diagram as a `tikz` code block containing `\begin{tikzpicture}` ... `\end{tikzpicture}`.
-- Convert Mermaid diagrams in your chapter notes to TikZ code blocks when they need to appear in the thesis PDF.
-- Keep TikZ/source text export-friendly by avoiding emoji-style Unicode symbols in chapter source files.
-  - Replaced circled numbers `①②③④` with plain `1/2/3/4`.
-  - Replaced Unicode arrow `→` with ASCII `->`.
-  - Replaced midline ellipsis `⋯` / `…` with ASCII `...`.
-  - Verified no emoji-style codepoints remain in TikZ-heavy source files for the scanned symbol ranges.
-- Run a small Markdown-to-PDF export test with `./scripts/build-thesis.sh`.
-- Verify the explicit Markdown-to-TeX-to-PDF path without command-line `header-includes` or command-line `--csl`.
-  - Generated TeX: `/private/tmp/sample-yaml-csl/Sample.tex`.
-  - Generated PDF: `/private/tmp/sample-yaml-csl/Sample.pdf`.
-  - Confirmed generated TeX contains citeproc `CSLReferences`, `\usepackage{tikz}`, `\usetikzlibrary{arrows.meta,positioning,fit,backgrounds}`, and raw `\begin{tikzpicture}`, with no verbatim/highlighting block.
-  - Note: the sample may emit a non-fatal overfull hbox warning if the TikZ diagram is wider than the text block.
-
-#### TikZ plugin
-
-- Use `LuaTikZ` as the active Obsidian live TikZ renderer.
-- Configure `LuaTikZ` local renderer.
-  - Renderer: `LuaLaTeX`.
-  - LuaLaTeX path: `/Library/TeX/texbin/lualatex`.
-  - Current plugin config in `.obsidian/plugins/luatikz/data.json`:
-
-    ```json
-    {
-      "renderEngine": "lualatex",
-      "lualatexPath": "/Library/TeX/texbin/lualatex",
-      "enableLocalShellRenderer": true,
-      "outputFormat": "svg",
-      "timeoutMs": 15000,
-      "cacheEnabled": true,
-      "extraPreamble": "\\usepackage{luatexja-fontspec}\n\\setmainjfont{Songti SC}"
-    }
-    ```
-
-  - Extra preamble for Chinese text:
-
-    ```latex
-    \usepackage{luatexja-fontspec}
-    \setmainjfont{Songti SC}
-    ```
-
-  - Keep LuaTikZ scratch builds out of the iCloud-synced plugin directory:
-    - Backed up the original temp folder to `.obsidian/plugins/luatikz/.luatikz-temp.backup-20260701`.
-    - Pointed `.obsidian/plugins/luatikz/.luatikz-temp` to `/private/tmp/obsidian-luatikz-temp`.
-  - Reason: LuaTikZ writes `.tex`, `.aux`, `.log`, `.pdf`, and `.svg` files during live rendering; iCloud-managed plugin temp folders can fail with `I can't write on file ... .aux`.
-  - Verified a minimal standalone TikZ document compiles through the symlinked LuaTikZ temp path with `/Library/TeX/texbin/lualatex`.
-  - Verified a minimal Chinese TikZ node compiles with `Songti SC` embedded and converts from PDF to SVG.
-  - After changing LuaTikZ settings, reload Obsidian or disable/enable the `LuaTikZ` plugin, then clear LuaTikZ cache if an old broken SVG remains visible.
-- Current standard path: Obsidian preview through `LuaTikZ`; Pandoc PDF export through `pandoc-thesis.yaml` plus `chapters/00-meta.md`.
-- Verify local TeX/SVG tools are available for other workflows.
-  - `pdflatex`: `/Library/TeX/texbin/pdflatex`.
-  - `dvisvgm`: `/Library/TeX/texbin/dvisvgm`.
-  - `pdf2svg`: `/opt/homebrew/bin/pdf2svg`.
-- Create a simple TikZ render test note under `thesis-root/chapters/`.
-- Open that note in Obsidian reading mode and confirm the SVG renders.
-
-#### Txt as MD
-
-- Open `Settings > Txt as MD`.
-- Add `tex` to the comma-separated list of allowed extensions.
-- Restart Obsidian.
-- Confirm `.tex` files open inside Obsidian instead of an external editor.
-
-### Phase 5: Pre-flight check
-
-- Test math rendering.
-  - Create a new note.
-  - Type `$$ \sum_{i=1}^n $$`.
-  - Confirm the summation symbol renders correctly.
-- Test TikZ rendering.
-  - Open your TikZ test note under `thesis-root/chapters/`.
-  - Wait 2-3 seconds.
-  - Confirm the SVG renders in reading mode.
-- Test the Zotero bridge.
-  - Press the Zotero Integration hotkey, such as `Ctrl+Shift+O` or `Cmd+Shift+O`.
-  - Search for a paper by title or author.
-  - Import the paper.
-  - Confirm the generated Markdown note appears in `thesis-root/literatures`.
-  - Confirm the note contains the correct title, abstract, and annotation content.
-
-### Completion criteria
-
-- Zotero can auto-update `thesis-root/references.bib`.
-- Zotero Integration can generate literature notes from your import template.
-- Markdown drafts can export through Pandoc with citations resolved.
-- Math and TikZ blocks render correctly inside Obsidian.
-- `.tex` files can be opened and edited directly in Obsidian.
+Typography follows the official BUAAThesis **v4.1.0** series. Compare layout against
+`官方示例.pdf`; this repo’s Markdown build is illustrated by `输出示例.pdf`. The modular
+`buaa/` tree (`core/` + `reports/` + bundled `font/`) and Markdown workflow are maintained
+for Obsidian-centric drafting. Class version string: `\BUAAThesisVer{}`
+(`v4.1.0 modular` in `buaa/core/packages.tex`).

@@ -1,0 +1,28 @@
+{
+  "database": "Zotero",
+  "noteImportFolder": "",
+  "pdfExportImageDPI": 120,
+  "pdfExportImageFormat": "png",
+  "pdfExportImageQuality": 90,
+  "citeFormats": [
+    {
+      "name": "Pandoc Citation",
+      "format": "pandoc",
+      "brackets": true,
+      "cslStyle": "[@{{citekey}}]"
+    }
+  ],
+  "exportFormats": [
+    {
+      "name": "Literature Note",
+      "outputPathTemplate": "__THESIS_PREFIX__literatures/{{citekey}}.md",
+      "imageOutputPathTemplate": "__THESIS_PREFIX__literatures/{{citekey}}/",
+      "imageBaseNameTemplate": "image",
+      "templatePath": "__THESIS_PREFIX__literatures/zotero_literature_template.md",
+      "cslStyle": "china-national-standard-gb-t-7714-2015-numeric"
+    }
+  ],
+  "citeSuggestTemplate": "[[{{citekey}}]]",
+  "openNoteAfterImport": false,
+  "whichNotesToOpenAfterImport": "first-imported-note"
+}

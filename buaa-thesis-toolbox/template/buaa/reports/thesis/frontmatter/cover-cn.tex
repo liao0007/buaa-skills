@@ -1,0 +1,69 @@
+%% buaa/reports/thesis/frontmatter/cover-cn.tex
+%% 校名: logo-buaa.eps; 论文类别: 华文行楷活字缩放至官方 head-*.eps 同宽 0.8\linewidth; 论文题目: 32pt 宋体加粗.
+\newcommand{\buaa@thesisCategoryCn}{%
+  \ifthenelse{\equal{\buaa@thesis}{master}}{硕士学位论文}{%
+  \ifthenelse{\equal{\buaa@thesis}{professional}}{专业硕士学位论文}{%
+  \ifthenelse{\equal{\buaa@thesis}{doctor}}{博士学位论文}{%
+  \ifthenelse{\equal{\buaa@thesis}{prodoctor}}{专业博士学位论文}{%
+  }}}}%
+}
+\newcommand{\buaa@includethesishead}{%
+  \centering
+  \resizebox{.8\linewidth}{!}{%
+    {\xingkai\fontsize{48}{58}\selectfont\mbox{\buaa@thesisCategoryCn}}%
+  }%
+}
+\newcommand{\buaa@coverMetaLabel}[1]{\makebox[5\ccwd][s]{#1}}
+\newcommand{\makecovercn}{%
+{\pdfbookmark[0]{中文封面}{makecovercn}%
+  {\zihao{5} \heiti \bfseries \noindent
+    \buaa@coverMetaLabel{中图分类号}：{\@clc}%
+    \\
+    \buaa@coverMetaLabel{论文编号}：{10006\@studentid}%
+    \\
+    \TranSecretLevel{\@permission}%
+  }
+
+  \vspace{25pt}
+
+  \begin{figure}[h]
+    \centering
+    \includegraphics[width=.5\linewidth]{buaa/assets/logo-buaa}
+  \end{figure}
+  \vspace{-10pt}
+  \begin{figure}[h]
+    \buaa@includethesishead
+  \end{figure}
+
+  \centering
+
+  \vspace{75pt}
+  \begin{spacing}{1.2}
+    \ifthenelse{\isundefined{\@subtitlecn}}{\vspace{20pt}}{}
+    \fontsize{32pt}{38.4pt}\selectfont \songti \bfseries \@titlecn
+    \ifthenelse{\isundefined{\@subtitlecn}}{\vspace{20pt}}{%
+      \\ \vspace{10pt}
+      \zihao{1} \@subtitlecn
+    }
+  \end{spacing}
+
+  \vspace{50pt}
+  \begin{spacing}{1.8}
+    \ziju{0.2} \zihao{4} \heiti
+    \hspace{100pt}
+    \begin{tabular}{p{3cm}<{\centering}p{8cm}<{\raggedright}}
+      作者姓名  & \@authorcn \\
+      \ifthenelse{\equal{\buaa@thesis}{master} \OR \equal{\buaa@thesis}{doctor}}%
+        {学科专业}{专业名称} & \@major \\
+      指导教师  & \@tutorcn\hspace{1.4em}\@tutordegree \\
+      \ifthenelse{\isundefined{\@cotutorcn}}{}{%
+                & \@cotutorcn\hspace{1.4em}\@cotutordegree\\
+      }
+      培养学院  & \@department
+      \ifthenelse{\isundefined{\@specialprog}}{}{%
+      \\ 专项计划 & \@specialprog
+      }
+    \end{tabular}
+  \end{spacing}
+  \clearautopage
+}}

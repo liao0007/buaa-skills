@@ -1,0 +1,55 @@
+%% buaa/reports/thesis/frontmatter/cover-en.tex
+\newcommand{\makecoveren}{%
+{\pdfbookmark[0]{英文封面}{makecoveren}%
+  \centering
+
+  \ \vspace{100pt}
+
+  \begin{spacing}{1.2}
+
+    {\begin{spacing}{1.2}
+      \zihao{-2} \buaa@latin\bfseries
+      \ifthenelse{\isundefined{\@subtitleen}}{\vspace{20pt}}{}
+      \@titleen
+      \ifthenelse{\isundefined{\@subtitleen}}{\vspace{20pt}}{%
+        \\ \vspace{10pt}
+        \zihao{3} \@subtitleen}
+    \end{spacing}
+    }
+
+    \vspace{50pt}
+
+    {\zihao{4}\buaa@latin
+      \ifthenelse{\equal{\buaa@thesis}{master} \OR \equal{\buaa@thesis}{doctor}}%
+        {A Dissertation Submitted for the Degree of \@degree}%
+        {A Dissertation Submitted for the Professional Degree of \@degree}%
+    }
+
+    \vspace{120pt}
+    {\zihao{-3} \buaa@latin\bfseries
+      \hspace{3.0cm}
+      \begin{tabular}{p{3.5cm}<{\raggedright}p{7cm}<{\raggedright}}
+        \ifthenelse{\isundefined{\@cotutorcn}}{%
+          \makebox[70pt][s]{Candidate}:  & \@authoren \\
+          \vspace{11pt} \makebox[70pt][s]{Supervisor}: & \vspace{11pt} \TranDegree{\@tutordegree} \hspace{-8pt} \@tutoren \\
+        }{%
+          \makebox[77pt][s]{Candidate}:  & \@authoren \\
+          \vspace{11pt}\makebox[77pt][s]{Supervisors}: & \vspace{11pt}\TranDegree{\@tutordegree} \hspace{-8pt} \@tutoren \\
+                                          & \TranDegree{\@cotutordegree} \hspace{-8pt} \@cotutoren\\
+        }
+      \end{tabular}
+    }
+  \end{spacing}
+
+  \vspace{150pt}
+
+  \begin{spacing}{2.2}
+    {\zihao{-3}\buaa@latin
+      \@departmenten \\
+      \vspace{0pt}
+      Beihang University, Beijing, China
+    }
+  \end{spacing}
+
+  \clearautopage
+}}

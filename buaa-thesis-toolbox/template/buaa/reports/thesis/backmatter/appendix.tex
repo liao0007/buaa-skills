@@ -1,0 +1,19 @@
+%% buaa/reports/thesis/backmatter/appendix.tex
+\renewcommand{\appendix}{%
+  \par
+  \ctexset{chapter/numbering=true}%
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \setcounter{subsection}{0}%
+  \gdef\thechapter{\@Alph\c@chapter}%
+  \ctexset{%
+    chapter={name={附录,},number=\thechapter,aftername=\hspace{1em}},
+    section={number=\thechapter.\arabic{section},aftername=\hspace{\ccwd}},
+  }%
+  \renewcommand{\thefigure}{\thechapter.\arabic{figure}}%
+  \renewcommand{\thetable}{\thechapter.\arabic{table}}%
+  \renewcommand{\theequation}{(\thechapter.\arabic{equation})}%
+  \counterwithin{figure}{chapter}%
+  \counterwithin{table}{chapter}%
+  \counterwithin{equation}{chapter}%
+}

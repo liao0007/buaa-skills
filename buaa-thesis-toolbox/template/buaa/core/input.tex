@@ -2,7 +2,7 @@
 \newcommand{\buaa@input}[1]{%
   \InputIfFileExists{buaa/#1.tex}{}{%
     \ClassError{buaa}{Missing file `buaa/#1.tex'}{%
-      Ensure the `buaa/` directory ships alongside `buaa.cls`.}%
+      Class file is `buaa/buaa.cls`; ensure TEXINPUTS includes `buaa//`.}%
   }%
 }
 \newcommand{\buaa@loadreport}{%
@@ -12,6 +12,6 @@
   }{%
     \ClassError{buaa}{Unknown report profile `\buaa@report'}{%
       Available profiles live under `buaa/reports/`.%
-      Use class option `buaa-thesis`, `coursework`, or `generic`.}%
+      Use class option `thesis`, `coursework`, or `generic`.}%
   }%
 }

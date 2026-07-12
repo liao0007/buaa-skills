@@ -1,0 +1,19 @@
+%% buaa/reports/thesis/backmatter/summary.tex
+\newcommand{\chaptera}[1]{\buaa@beginUnnumberedChapter{#1}}
+\newcommand{\summary}{\buaa@beginUnnumberedChapter{结~~~~论}}
+\newcommand{\buaareferences}{%
+  \clearpage
+  \pagestyle{postref}%
+  \buaa@beginUnnumberedChapter{参考文献}%
+  \begingroup
+  \songti\fontsize{10.5pt}{10.5pt}\selectfont
+  % Match official NAT@biblabelnum spacing: label column ≈ [99] + 0.1em
+  \ifdefined\csllabelwidth
+    \settowidth{\csllabelwidth}{[99]\hspace{0.1em}}%
+    \addtolength{\csllabelwidth}{3.2pt}% match official label→text gap (~21.7pt)
+    \renewcommand{\CSLLeftMargin}[1]{%
+      \parbox[t]{\csllabelwidth}{\strut\ignorespaces##1\unskip\strut}%
+    }%
+  \fi
+}
+\newcommand{\buaareferencesend}{\par\endgroup}

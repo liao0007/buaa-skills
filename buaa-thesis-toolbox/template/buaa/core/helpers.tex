@@ -1,48 +1,28 @@
 %% buaa/core/helpers.tex — shared conditionals and font helpers
 \newcommand{\buaa@ifsMastersThesis}[2]{%
-  \ifthenelse{\equal{\@thesis}{master} \OR \equal{\@thesis}{professional}}{#1}{#2}%
+  \ifthenelse{\equal{\buaa@thesis}{master} \OR \equal{\buaa@thesis}{professional}}{#1}{#2}%
 }
 \newcommand{\buaa@ifsDoctorThesis}[2]{%
-  \ifthenelse{\equal{\@thesis}{doctor} \OR \equal{\@thesis}{prodoctor}}{#1}{#2}%
+  \ifthenelse{\equal{\buaa@thesis}{doctor} \OR \equal{\buaa@thesis}{prodoctor}}{#1}{#2}%
 }
 \newcommand{\buaa@latin}{\rmfamily\upshape}
 
-\newcommand{\buaa@setupLatinFont}{%
-  \ifpdftex
-    \ifthenelse{\equal{\@ostype}{win}}{\RequirePackage{times}}{}
-    \ifthenelse{\equal{\@ostype}{linux}}{%
-      \RequirePackage{newtxtext}%
-      \RequirePackage{newtxmath}%
-    }{}
-    \ifthenelse{\equal{\@ostype}{mac}}{\RequirePackage{times}}{}
-  \else
-    \IfFontExistsTF{Times New Roman}{%
-      \setmainfont{Times New Roman}[%
-        BoldFont = * Bold,
-        ItalicFont = * Italic,
-        BoldItalicFont = * Bold Italic
-      ]%
-    }{%
-      \ClassWarning{buaa}{%
-        Times New Roman not found; using TeX Gyre Termes instead.%
-      }%
-      \setmainfont{TeX Gyre Termes}[%
-        Extension = .otf,
-        UprightFont = *-regular,
-        BoldFont = *-bold,
-        ItalicFont = *-italic,
-        BoldItalicFont = *-bolditalic
-      ]%
+\newcommand{\buaa@setupFonts}{%
+  \IfFileExists{buaa/font/setup.tex}{%
+    \input{buaa/font/setup.tex}%
+  }{%
+    \ClassError{buaa}{Missing buaa/font/setup.tex}{%
+      Add buaa/font/setup.tex with XeLaTeX/LuaLaTeX font definitions.%
     }%
-  \fi
+  }%
 }
 
-\RequirePackage{iftex}
-\buaa@setupLatinFont
+\buaa@setupFonts
+\AddToHook{begindocument/before}{\buaa@setMathFont}
 
 \newcommand{\clearautopage}{%
   \clearpage
-  \ifthenelse{\equal{\@printtype}{twoside}}{%
+  \ifthenelse{\equal{\@printtype}{print}}{%
     \ifodd\c@page
     \else
       \hbox{}
@@ -56,6 +36,20 @@
       \if@twocolumn \hbox{} \newpage \fi
     \fi
   }{}
+}
+
+\newcommand{\emptypage}{%
+  \clearpage
+  \hbox{}
+  \vspace*{\fill}
+  \begin{center}
+    {\textcolor[rgb]{0.75,0.75,0.75}{\@emptypagewords}}
+  \end{center}
+  \vspace{\fill}
+  \thispagestyle{empty}
+  \addtocounter{page}{-1}
+  \newpage
+  \if@twocolumn \hbox{} \newpage \fi
 }
 
 \newcommand{\buaa@resetAppendixCounters}{%

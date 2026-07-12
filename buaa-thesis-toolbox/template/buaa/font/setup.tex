@@ -1,0 +1,61 @@
+%% buaa/font/setup.tex — aligned with BUAAThesis 4.1.0 def/buaa.cls
+%% CJK files: same names as official def/ (simsun.ttc / simhei.ttf / simkai.ttf / simfang.ttf).
+%% Path is ./buaa/font/ (modular layout); official uses ./def/.
+%%
+%% AutoFakeBold: SimSun has no real Bold; without this, \songti\bfseries looks regular.
+%% Times lock: Pandoc injects lmodern which would otherwise steal Latin to LM (tight caps).
+
+\newcommand{\buaa@setLatinFont}{%
+  \setmainfont{Times New Roman}[
+    Path=./buaa/font/,
+    Extension=.ttf,
+    UprightFont=Times New Roman,
+    BoldFont=Times New Roman Bold,
+    ItalicFont=Times New Roman Italic,
+    BoldItalicFont=Times New Roman Bold Italic,
+  ]%
+}
+\buaa@setLatinFont
+%% Re-apply after Pandoc's \usepackage{lmodern} (loads after class in .tex).
+\AddToHook{package/lmodern/after}{\buaa@setLatinFont}
+\AtBeginDocument{\buaa@setLatinFont}
+
+\newfontfamily\SimSunPageNum{simsun}[
+  Path=./buaa/font/,
+  Extension=.ttc,
+]
+
+\setCJKmainfont{simsun.ttc}[
+  Path=./buaa/font/,
+  AutoFakeBold=4,
+]
+\xeCJKDeclareCharClass{CJK}{"2460->"2469}
+\setCJKsansfont{simhei.ttf}[Path=./buaa/font/]
+\setCJKmonofont{simfang.ttf}[Path=./buaa/font/]
+\setCJKfamilyfont{zhsong}{simsun.ttc}[
+  Path=./buaa/font/,
+  AutoFakeBold=4,
+]
+\setCJKfamilyfont{zhhei}{simhei.ttf}[
+  Path=./buaa/font/,
+  AutoFakeBold=2,
+]
+\setCJKfamilyfont{zhkai}{simkai.ttf}[Path=./buaa/font/]
+\setCJKfamilyfont{zhfs}{simfang.ttf}[Path=./buaa/font/]
+\newcommand*{\songti}{\CJKfamily{zhsong}}
+\newcommand*{\heiti}{\CJKfamily{zhhei}}
+\newcommand*{\kaishu}{\CJKfamily{zhkai}}
+\newcommand*{\fangsong}{\CJKfamily{zhfs}}
+
+%% Project-only: cover category live 行楷 (official uses head-*.eps, not this file).
+\setCJKfamilyfont{zhxingkai}{STXingkai.ttf}[Path=./buaa/font/]
+\newcommand*{\xingkai}{\CJKfamily{zhxingkai}}
+
+\gdef\buaa@setMathFont{%
+  \IfFileExists{buaa/font/Cambria Math.ttf}{%
+    \setmathfont{Cambria Math}[Path=./buaa/font/,Extension=.ttf]%
+  }{%
+    \ClassWarningNoLine{buaa}{Cambria Math is missing; using STIX Two Math as the rendering fallback}%
+    \setmathfont{STIX Two Math}%
+  }%
+}

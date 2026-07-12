@@ -1,0 +1,58 @@
+%% buaa/reports/thesis/frontmatter/cover-inner.tex
+\newcommand{\makecoverinner}{%
+{\pdfbookmark[0]{题名页}{makecoverinner}%
+  {\zihao{5} \heiti \bfseries \noindent
+    \buaa@coverMetaLabel{中图分类号}：{\@clc}
+    \\
+    \buaa@coverMetaLabel{论文编号}：{10006\@studentid}
+  }
+
+  \centering
+  \vspace{122pt}
+
+  \begin{spacing}{1.3}
+    {\zihao{-2} \heiti
+      \ifthenelse{\equal{\buaa@thesis}{master}}{%
+        \makebox[11\ccwd][s]{硕士学位论文}}{%
+      \ifthenelse{\equal{\buaa@thesis}{professional}}{%
+        \makebox[11\ccwd][s]{硕士学位论文}}{%
+      \ifthenelse{\equal{\buaa@thesis}{doctor}}{%
+        \makebox[11\ccwd][s]{博士学位论文}}{%
+      \ifthenelse{\equal{\buaa@thesis}{prodoctor}}{%
+        \makebox[11\ccwd][s]{博士学位论文}}{%
+      }}}}
+    }
+
+    \vspace{80pt}
+    {\begin{spacing}{1.2}
+      \zihao{-1} \heiti \bfseries
+      \ifthenelse{\isundefined{\@subtitlecn}}{\vspace{20pt}}{}
+      \@titlecn
+      \ifthenelse{\isundefined{\@subtitlecn}}{\vspace{20pt}}{%
+        \\ \vspace{10pt}
+        \zihao{-1} \@subtitlecn}
+    \end{spacing}
+    }
+  \end{spacing}
+
+  \ifthenelse{\equal{\@titlelength}{short}}{\vspace{105pt}}{\vspace{90pt}}
+  \begin{spacing}{2.2}
+    \zihao{-4} \songti \hspace{-20pt}
+    \begin{tabular}{lrrrlrrr}
+      作者姓名     &          \multicolumn{3}{l}{\@authorcn}                   & 申请学位级别        &   \multicolumn{3}{l}{
+        \@branch
+        \buaa@ifsMastersThesis{硕士}{%
+        \buaa@ifsDoctorThesis{博士}{}}
+      }       \\
+      指导教师姓名 &          \multicolumn{3}{l}{\@tutorcn}                    & 职\hspace{2\ccwd}称 &                        \multicolumn{3}{l}{\@tutordegree}                      \\
+      \ifthenelse{\equal{\buaa@thesis}{master} \OR \equal{\buaa@thesis}{doctor}}%
+        {学科专业}{专业名称} & \multicolumn{3}{l}{\@major} & 研究方向 & \multicolumn{3}{l}{\@feild} \\
+      \ifthenelse{\equal{\buaa@thesis}{master} \OR \equal{\buaa@thesis}{doctor}}%
+        {一级学科 & \multicolumn{3}{l}{\@discipline} & 学科方向 & \multicolumn{3}{l}{\@direction} \\}{}
+      学习时间自   & \@dateenrolly\ 年 & \@dateenrollm\ 月 & \@dateenrolld\ 日起 & 至 & \@dategraduatey\ 年 & \@dategraduatem\ 月 & \@dategraduated\ 日止             \\
+      论文提交日期 & \@datesubmity\ 年 & \@datesubmitm\ 月 & \@datesubmitd\ 日\hspace{\ccwd} & 论文答辩日期        & \@datedefencey \ 年 & \@datedefencem \ 月 & \@datedefenced \ 日\hspace{\ccwd} \\
+      学位授予单位 &          \multicolumn{3}{l}{北京航空航天大学}             & 学位授予日期        &                  年 &                  月 &                  日\hspace{\ccwd} \\
+    \end{tabular}
+  \end{spacing}
+  \clearautopage
+}}

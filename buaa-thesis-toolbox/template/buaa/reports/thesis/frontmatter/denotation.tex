@@ -1,0 +1,16 @@
+%% buaa/reports/thesis/frontmatter/denotation.tex
+\newcommand{\denotation}{%
+{%
+  \ifthenelse{\isundefined{\@signs}}{}{%
+    \pdfbookmark[0]{主要符号表}{sign}%
+    \chapter*{\heiti\zihao{3}主要符号表}
+    \songti\zihao{-4}\@signs
+    \clearpage
+  }%
+  \ifthenelse{\isundefined{\@abbreviations}}{}{%
+    \pdfbookmark[0]{缩略语说明}{abbreviation}%
+    \chapter*{\heiti\zihao{3}缩略语说明}
+    \songti\zihao{-4}\@abbreviations
+    \clearpage
+  }%
+}}

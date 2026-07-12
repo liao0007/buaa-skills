@@ -1,36 +1,43 @@
 ---
 bibliography: ./references.bib
 classoption:
-  - fontset=fandol
-  - master
+  - fontset=none
+  - professional
   - public
-  - twoside
-csl: ./gb-t-7714-2015-numeric-superscript.csl
+  - library
+  - mac
+  - short
+  - STEM
+  - thesis
+csl: ./buaa/gb-t-7714-2015-numeric-superscript.csl
 documentclass: buaa
 indent: true
 link-citations: true
 numbersections: true
 header-includes:
-  # ==== 页面布局配置（改这一行即可，无需改 buaa.cls）====
-  # 上下边距 top/bottom，左右边距 left/right，装订线 bindingoffset（0=左右对称；双面装订可设为如 8mm）。
-  - \geometry{top=25mm,bottom=25mm,left=25mm,right=25mm,bindingoffset=0mm}
-  - \Abstract{摘要是学位论文内容的简短陈述，应体现论文工作的核心思想。论文摘要应力求 语言精炼准确。博士学位论文的中文摘要一般约800$\sim$1200字；硕士学位论文的中文摘 要一般约500字。摘要内容应涉及本项科研工作的目的和意义、研究思想和方法、研究 成果和结论。博士学位论文必须突出论文的创造性成果，硕士学位论文必须突出论文 的新见解。 关键字是为用户查找文献，从文中选取出来揭示全文主体内容的一组词语或术语， 应尽量采用词表中的规范词（参考相应的技术术语标准）。关键词一般3$\sim$5个，按词条 的外延层次排列（外延大的排在前面）。关键词之间用逗号分开，最后一个关键词后不 打标点符号。 为了国际交流的需要，论文必须有英文摘要。英文摘要的内容及关键词应与中文 摘要及关键词一致，要符合英语语法，语句通顺，文字流畅。英文和汉语拼音一律 为Times New Roman体，字号与中文摘要相同。}{What were you doing 500 years ago? Oh, that’s right nothing, because you didn’t exist yet. In fact, several generations of your family had yet to leave their mark on the world, but one very special shark may already have been swimming in the chilly North Atlantic at that time, and the incredible animal is somehow still alive today. Scientists studying Greenland sharks observed the particularly old specimen just recently, and after studying it they’ve determined that the creature is approximately 272 to 512 years old. That’s an absolutely insane figure, and if its age lands towards the higher end, it makes the animal the oldest observed living vertebrate on the entire planet. Greenland sharks are an incredible species in a number of ways, but most notable is its longevity. The sharks are well over 100 years old before even reaching sexual maturity, and regularly live for centuries. This particularly old specimen, along with 27 others, were analyzed using radiocarbon dating. The reading came back at around 392 years, but potential margin of error means the animal’s true age is somewhere between 272 and 512. The shark, which is a female, measures an impressive 18 feet long. That’s pretty large, but it might not sound particularly large for an ocean-dwelling creature that lives hundreds of years. That is, until you consider that the Greenland shark only grows around one centimeter per year. With that in mind, 18 feet is actually downright massive. As for how this particular shark species manages to live so incredibly long, scientists attribute a lot of its longevity to its sluggish metabolism, as well as its environment. The frigid waters where the sharks thrive is thought to increase overall lifespan in a variety of ways. Past research has shown that cold environments can help slow aging, and these centuries-old sharks are most certainly benefiting from their chilly surroundings.}
-  - \Author{廖亮}{Liao Liang}
-  - \CLC{FE2508}
+  - \Abstract{本文是北京航空航天大学硕博士学位论文 Markdown + Pandoc + buaa 模板的最小演示文稿。文中说明 00-meta.md 的配置项，并示例引用、脚注、Markdown 表格、TikZ 插图、数学公式、算法环境及附录等后置命令的写法，供使用者对照改写。正文不展开真实研究问题与案例结论。}{This document is a minimal demo of the Beihang University thesis Markdown + Pandoc + buaa template. It documents 00-meta.md settings and shows sample syntax for citations, footnotes, Markdown tables, TikZ figures, mathematics, algorithms, and back-matter commands. It does not present a full research study.}
+  - \Author{梁同学}{Liang Tongxue}
+  - \CLC{TP391}
   - \DateEnroll{9}{1}{2025}
   - \DateGraduate{6}{30}{2027}
   - \DateSubmit{5}{1}{2027}
   - \DateDefence{5}{20}{2027}
-  - \Department{经济管理学院}
-  - \Feild{公司治理}
-  - \Keyword{公司治理，案例研究，学位论文}{Corporate Governance, Case Study, Thesis}
+  - \Department{经济管理学院}{School of Economics and Management}
+  - \Degree{Master of Business Administration}
+  - \Branch{工商管理}
+  - \Feild{学位论文排版}
+  - \Keyword{学位论文模板，Markdown，Pandoc，XeLaTeX，排版示例}{Thesis Template, Markdown, Pandoc, XeLaTeX, Typesetting Demo}
   - \Listfigtab{on}
   - \Major{工商管理}
-  - \StudentID{SY2508236}
-  - \Subtitle{LATEX模板BUAATHESIS}{A Dissertation Submitted for the Degree of Master}
-  - \Title{北航硕士学位论文}{LATEX Template of Beihang University Thesis BUAATHESIS}
+  - \StudentID{ZF2508236}
+  - \Subtitle{模板演示文稿 · \BUAAThesisVer{}}{Template Demo · \BUAAThesisVer{}}
+  - \Title{北航硕博士学位论文~\LaTeX{}模板\englogo{DEMO}}{\LaTeX{} Template of Beihang University Thesis \englogo{DEMO}}
   - \Tutor{田中文}{Tian Zhongwen}{教授}
+  - \Signs{\begin{tabular}{@{}cl@{}} $\alpha,\beta$ & 模型参数 \\ $\varepsilon$ & 随机扰动项 \\ $\mathbf{x}$ & 向量 \end{tabular}}
+  - \Abbreviations{\begin{tabular}{@{}cl@{}} MBA & Master of Business Administration \\ CSL & Citation Style Language \\ PDF & Portable Document Format \\ TikZ & TeX ist kein Zeichenprogramm \end{tabular}}
   - \usepackage{tikz}
-  - \usetikzlibrary{arrows.meta,positioning,fit,backgrounds}
-  - \RenewDocumentCommand\citeproc{mm}{#2}
+  - \usetikzlibrary{arrows.meta,positioning,fit,backgrounds,shapes.geometric}
+  - \emptypagewords{[ – This page is a preset empty page – ]}
+  - \refcolor{off}
 ---
+**

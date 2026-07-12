@@ -1,9 +1,0 @@
-%% buaa/reports/buaa-thesis/frontmatter/denotation.tex
-\newcommand{\denotation}{%
-{\ifthenelse{\isundefined{\@abbreviations}}{}{%
-    \pdfbookmark[0]{主要符号表}{denotation}
-    \chapter*{主要符号表}
-      \@abbreviations
-    \ifthenelse{\equal{\@beginright}{off}}{\clearpage}{\clearautopage}
-  }
-}}
